@@ -1,0 +1,469 @@
+/* ═══════════════════════════════════════════
+   Reports Page Styles
+   ═══════════════════════════════════════════ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  min-height: 100%;
+}
+
+/* ─── Page Header ─── */
+.header {
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text-primary, #0F172A);
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary, #65758B);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Toolbar (Search Only) ─── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* ─── Search ─── */
+.searchWrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 420px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-secondary, #94A3B8);
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.searchInput {
+  width: 100%;
+  height: 42px;
+  padding: 0 40px 0 42px;
+  border: 1px solid var(--color-border, #E2E8F0);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-text-primary, #0F172A);
+  background: var(--color-bg-primary, #ffffff);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-secondary, #94A3B8);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary, #EE202E);
+  box-shadow: 0 0 0 3px rgba(238, 32, 46, 0.08);
+}
+
+.searchWrapper:focus-within .searchIcon {
+  color: var(--color-primary, #EE202E);
+}
+
+.clearSearchBtn {
+  position: absolute;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.clearSearchBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.clearIcon {
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-secondary, #94A3B8);
+}
+
+.clearSearchBtn:hover .clearIcon {
+  color: #EF4444;
+}
+
+/* ─── Table Card ─── */
+.tableCard {
+  background: var(--color-bg-primary, #ffffff);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border, #E5E7EB);
+  overflow: hidden;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+/* ─── Table ─── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table th {
+  padding: 14px 24px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text-secondary, #65758B);
+  background: var(--color-bg-secondary, #F8FAFC);
+  border-bottom: 1px solid var(--color-border, #E5E7EB);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Sortable Header ─── */
+.sortableHeader {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.sortableHeader:hover {
+  color: var(--color-text-primary, #0F172A);
+  background: rgba(238, 32, 46, 0.03);
+}
+
+.sortableHeaderActive {
+  color: var(--color-primary, #EE202E) !important;
+}
+
+.thContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sortHint {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-primary, #EE202E);
+  opacity: 0.8;
+}
+
+.sortArrows {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-secondary, #C1C8D4);
+  transition: color 0.2s ease;
+}
+
+.sortArrowsActive {
+  color: var(--color-primary, #EE202E);
+}
+
+.sortArrowIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.thAction {
+  text-align: right !important;
+  cursor: default;
+}
+
+.tableRow {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--color-border, #F1F5F9);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRow:hover {
+  background-color: rgba(238, 32, 46, 0.02);
+}
+
+.table td {
+  padding: 16px 24px;
+  color: var(--color-text-primary, #0F172A);
+  vertical-align: middle;
+}
+
+/* ─── File Name Cell ─── */
+.fileNameCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fileIcon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.tdFileName span {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.tdCreatedAt {
+  color: var(--color-text-secondary, #65758B) !important;
+  font-size: 13px !important;
+}
+
+/* ─── Download Button ─── */
+.tdAction {
+  text-align: right;
+}
+
+.downloadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--color-text-primary, #334155);
+  border: 1px solid var(--color-border, #E2E8F0);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.downloadBtn:hover {
+  border-color: var(--color-primary, #EE202E);
+  color: var(--color-primary, #EE202E);
+  background: rgba(238, 32, 46, 0.04);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(238, 32, 46, 0.1);
+}
+
+.downloadIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ─── Pagination ─── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 24px;
+  border-top: 1px solid var(--color-border, #F1F5F9);
+}
+
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pageBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: transparent;
+  color: var(--color-text-secondary, #65758B);
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: var(--color-bg-secondary, #F1F5F9);
+  color: var(--color-text-primary, #0F172A);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageNum {
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.activePageBtn {
+  background: var(--color-primary, #EE202E) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.activePageBtn:hover {
+  background: #D41B27 !important;
+}
+
+.navBtn {
+  font-weight: 500;
+}
+
+.chevronIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ─── Results Info ─── */
+.resultsInfo {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--color-text-secondary, #94A3B8);
+  text-align: center;
+}
+
+/* ─── Empty State ─── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+  color: var(--color-text-secondary, #94A3B8);
+}
+
+.emptyIcon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 14px;
+  opacity: 0.5;
+}
+
+.emptyState p {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.clearSearchLink {
+  background: none;
+  border: none;
+  color: var(--color-primary, #EE202E);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.clearSearchLink:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════════
+   Responsive Styles
+   ═══════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 4px 0;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchWrapper {
+    max-width: 100%;
+  }
+
+  .table th,
+  .table td {
+    padding: 14px 16px;
+  }
+
+  .pagination {
+    padding: 16px;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .searchInput {
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px;
+  }
+
+  .downloadBtn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .pageBtn {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .pageNum {
+    min-width: 32px;
+    height: 32px;
+  }
+}

@@ -1,0 +1,95 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary, #374151);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.requiredMark {
+    color: #EE202E;
+    font-weight: bold;
+}
+
+.textAreaWrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+}
+
+.counter {
+    font-size: 12px;
+    color: var(--color-text-secondary, #6B7280);
+    text-align: right;
+    margin-top: 2px;
+}
+
+.counterMax {
+    color: #EE202E;
+}
+
+.textArea {
+    width: 100%;
+    padding: 12px 36px 12px 16px;
+    /* Right padding for clear button */
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    outline: none;
+    transition: all 0.2s ease;
+    resize: vertical;
+    background-color: var(--color-bg-primary, #FFFFFF);
+    color: var(--color-text-primary, #1E293B);
+    box-sizing: border-box;
+    border: 1.5px solid var(--color-border, #E2E8F0);
+    border-radius: 8px;
+}
+
+.textArea:focus {
+    border-color: var(--color-primary, #EE202E) !important;
+    box-shadow: 0 0 0 3px rgba(238, 32, 46, 0.1);
+}
+
+.textArea:disabled {
+    background-color: #F8FAFC;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.error {
+    border-color: var(--color-primary, #EE202E) !important;
+}
+
+.textArea::placeholder {
+    color: var(--color-text-secondary, #94A3B8);
+}
+
+.clearButton {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--color-text-secondary, #9CA3AF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.clearButton:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--color-primary, #EE202E);
+}

@@ -1,0 +1,118 @@
+.toggleContainer {
+    width: 72px;
+    height: 36px;
+    border-radius: 18px;
+    border: 2px solid #E2E8F0;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    background-color: #87CEEB;
+    transition: all 0.4s ease;
+    flex-shrink: 0;
+}
+
+.toggleContainer[data-theme='dark'] {
+    background-color: #2B2B2B;
+    border-color: #4A5568;
+}
+
+/* Removed [data-theme='dark'] .toggleContainer as it is moved to data-attribute selector above */
+
+.sky {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: white;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.toggleContainer[data-theme='dark'] .star {
+    opacity: 1;
+}
+
+.cloud {
+    position: absolute;
+    width: 12px;
+    height: 6px;
+    background-color: white;
+    border-radius: 6px;
+    opacity: 1;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.toggleContainer[data-theme='dark'] .cloud {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease-in-out;
+    transform: translateX(0);
+}
+
+.toggleContainer[data-theme='dark'] .circle {
+    transform: translateX(36px);
+}
+
+.sun {
+    width: 22px;
+    height: 22px;
+    background-color: #FFD700;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #FFD700;
+}
+
+.moon {
+    width: 22px;
+    height: 22px;
+    background-color: #D1D5DB;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 5px #D1D5DB;
+}
+
+.crater {
+    position: absolute;
+    background-color: #9CA3AF;
+    border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+    .toggleContainer {
+        width: 60px;
+        height: 30px;
+        border-radius: 15px;
+    }
+
+    .circle {
+        width: 22px;
+        height: 22px;
+    }
+
+    .toggleContainer[data-theme='dark'] .circle {
+        transform: translateX(30px);
+    }
+}

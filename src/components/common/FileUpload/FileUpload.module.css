@@ -1,0 +1,477 @@
+.wrapper {
+  width: 100%;
+}
+
+.fileUploadContainer {
+  width: 100%;
+  min-height: 200px;
+  border: 2px dashed #D1D5DB;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.fileUploadContainer.hasFile {
+  border-style: solid;
+  border-color: #D1D5DB;
+  background-color: #F9FAFB;
+  cursor: default;
+}
+
+.fileUploadContainer:hover {
+  border-color: #9CA3AF;
+  background-color: #F9FAFB;
+}
+
+.fileUploadContainer.dragging {
+  border-color: #4A90E2;
+  background-color: #EFF6FF;
+}
+
+.fileUploadContainer.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.fileInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.uploadContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.fileDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 24px;
+}
+
+.fileName {
+  font-size: 16px;
+  color: #374151;
+  font-weight: 500;
+  font-family: var(--font-family-primary, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  width: 38px;
+  height: 38px;
+}
+
+.removeButton:hover {
+  background-color: #EF4444;
+}
+
+.removeButton:hover img {
+  filter: brightness(0) invert(1);
+}
+
+.removeButton img {
+  width: 20px;
+  height: 20px;
+  transition: filter 0.2s ease;
+}
+
+.uploadIcon {
+  width: 48px;
+  height: 48px;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fileUploadContainer:hover .uploadIcon,
+.fileUploadContainer.dragging .uploadIcon {
+  color: #4A90E2;
+}
+
+.uploadText {
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+  margin: 0;
+  font-family: var(--font-family-primary, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
+}
+
+.fileUploadContainer:hover .uploadText,
+.fileUploadContainer.dragging .uploadText {
+  color: #1F2937;
+}
+
+.supportedFormats {
+  font-size: 14px;
+  color: #9CA3AF;
+  margin: 0;
+  font-family: var(--font-family-primary, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
+}
+
+.errorMessage {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #EF4444;
+  text-align: center;
+  font-family: var(--font-family-primary, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
+}
+
+/* Responsive Styles */
+
+/* Large Desktops (1920px and above) */
+@media (min-width: 1920px) {
+  .fileUploadContainer {
+    min-height: 240px;
+    border-radius: 10px;
+    border-width: 2.5px;
+  }
+
+  .uploadContent {
+    padding: 32px;
+    gap: 16px;
+  }
+
+  .uploadIcon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .uploadText {
+    font-size: 18px;
+  }
+
+  .supportedFormats {
+    font-size: 16px;
+  }
+
+  .errorMessage {
+    font-size: 16px;
+    margin-top: 12px;
+  }
+}
+
+/* Desktops (1024px - 1919px) - Default styles apply */
+
+/* Tablets (768px - 1023px) */
+@media (max-width: 1023px) {
+  .fileUploadContainer {
+    min-height: 180px;
+    border-radius: 8px;
+  }
+
+  .uploadContent {
+    padding: 20px;
+    gap: 10px;
+  }
+
+  .uploadIcon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .uploadText {
+    font-size: 15px;
+  }
+
+  .supportedFormats {
+    font-size: 13px;
+  }
+
+  .errorMessage {
+    font-size: 13px;
+  }
+}
+
+/* Mobile Devices (480px - 767px) */
+@media (max-width: 767px) {
+  .fileUploadContainer {
+    min-height: 160px;
+    border-radius: 6px;
+    border-width: 2px;
+  }
+
+  .uploadContent {
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .uploadIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .uploadText {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .supportedFormats {
+    font-size: 12px;
+  }
+
+  .errorMessage {
+    font-size: 12px;
+    margin-top: 6px;
+    padding: 0 8px;
+  }
+
+  .fileUploadContainer:hover {
+    border-color: #9CA3AF;
+    background-color: #F9FAFB;
+  }
+
+  .fileUploadContainer.dragging {
+    border-color: #4A90E2;
+    background-color: #EFF6FF;
+  }
+}
+
+/* Small Mobile Devices (320px - 479px) */
+@media (max-width: 479px) {
+  .fileUploadContainer {
+    min-height: 140px;
+    border-radius: 6px;
+    border-width: 1.5px;
+  }
+
+  .uploadContent {
+    padding: 14px;
+    gap: 6px;
+  }
+
+  .uploadIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .uploadText {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .supportedFormats {
+    font-size: 11px;
+  }
+
+  .errorMessage {
+    font-size: 11px;
+    margin-top: 6px;
+    padding: 0 6px;
+    line-height: 1.4;
+  }
+}
+
+/* Extra Small Devices (below 320px) */
+@media (max-width: 319px) {
+  .fileUploadContainer {
+    min-height: 120px;
+    border-radius: 5px;
+    border-width: 1.5px;
+  }
+
+  .uploadContent {
+    padding: 12px;
+    gap: 5px;
+  }
+
+  .uploadIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .uploadText {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .supportedFormats {
+    font-size: 10px;
+  }
+
+  .errorMessage {
+    font-size: 10px;
+    margin-top: 4px;
+    padding: 0 4px;
+    line-height: 1.3;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .fileUploadContainer {
+    min-height: 180px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.05);
+    border-width: 2.5px;
+  }
+
+  .fileUploadContainer:hover {
+    border-color: #D1D5DB;
+    background-color: #FFFFFF;
+  }
+
+  .fileUploadContainer:active {
+    background-color: #EFF6FF;
+    border-color: #4A90E2;
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  .uploadContent {
+    padding: 20px;
+  }
+
+  .uploadIcon {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Landscape Orientation (Mobile) */
+@media (max-width: 767px) and (orientation: landscape) {
+  .fileUploadContainer {
+    min-height: 120px;
+  }
+
+  .uploadContent {
+    padding: 12px;
+    gap: 6px;
+    flex-direction: row;
+  }
+
+  .uploadIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .uploadText {
+    font-size: 13px;
+  }
+
+  .supportedFormats {
+    font-size: 11px;
+  }
+}
+
+/* High DPI / Retina Displays */
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+  .fileUploadContainer {
+    border-width: 1px;
+  }
+
+  .fileUploadContainer.dragging {
+    border-width: 1.5px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .fileUploadContainer {
+    border: 1px solid #E5E7EB;
+    box-shadow: none;
+    background-color: #FFFFFF;
+    min-height: auto;
+    page-break-inside: avoid;
+  }
+
+  .uploadContent {
+    padding: 16px;
+  }
+
+  .uploadIcon {
+    color: #6B7280;
+  }
+
+  .uploadText,
+  .supportedFormats {
+    color: #374151;
+  }
+
+  .errorMessage {
+    color: #DC2626;
+  }
+}
+
+/* Reduced Motion (Accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  .fileUploadContainer {
+    transition: none;
+  }
+
+  .fileUploadContainer:active {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .fileUploadContainer {
+    background-color: #1F2937;
+    border-color: #4B5563;
+  }
+
+  .fileUploadContainer:hover {
+    background-color: #374151;
+    border-color: #6B7280;
+  }
+
+  .fileUploadContainer.dragging {
+    background-color: #1E3A5F;
+    border-color: #4A90E2;
+  }
+
+  .uploadText {
+    color: #F3F4F6;
+  }
+
+  .fileUploadContainer:hover .uploadText,
+  .fileUploadContainer.dragging .uploadText {
+    color: #FFFFFF;
+  }
+
+  .supportedFormats {
+    color: #9CA3AF;
+  }
+
+  .uploadIcon {
+    color: #9CA3AF;
+  }
+
+  .fileUploadContainer:hover .uploadIcon,
+  .fileUploadContainer.dragging .uploadIcon {
+    color: #60A5FA;
+  }
+}

@@ -1,0 +1,153 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 16px;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    background-color: var(--color-bg-primary);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.content {
+    padding: 24px 24px 16px;
+}
+
+.title {
+    margin: 0 0 16px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.message {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+}
+
+.chatName {
+    font-weight: 700;
+}
+
+.subtext {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    opacity: 0.8;
+}
+
+.link {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.cancelButton {
+    padding: 10px 20px;
+    border-radius: 100px;
+    border: 1px solid var(--color-border);
+    background-color: transparent;
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background-color: var(--color-bg-secondary);
+}
+
+.deleteButton {
+    padding: 10px 20px;
+    border-radius: 100px;
+    border: none;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.deleteButton:hover:not(:disabled) {
+    background-color: #d11c28;
+    transform: translateY(-1px);
+}
+
+.deleteButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.cancelButton:disabled,
+.deleteButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustment for small phones */
+@media (max-width: 480px) {
+    .modal {
+        max-width: 100%;
+        border-radius: 16px;
+    }
+
+    .content {
+        padding: 20px 20px 12px;
+    }
+
+    .footer {
+        padding: 12px 20px 20px;
+    }
+
+    .cancelButton,
+    .deleteButton {
+        flex: 1;
+        text-align: center;
+    }
+}

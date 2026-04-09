@@ -1,0 +1,224 @@
+.modalContent {
+    background-color: var(--color-bg-primary, #ffffff);
+    padding: 24px;
+    border-radius: 12px;
+    /* max-width: 540px;
+    width: 95vw; */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    color: var(--color-text-primary, #000000);
+    position: relative;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.titleArea {
+    flex: 1;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary, #111827);
+    margin: 0 0 6px 0;
+}
+
+.description {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #6b7280);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.closeBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary, #9ca3af);
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.closeBtn:hover {
+    background-color: var(--color-bg-secondary, #f3f4f6);
+    color: var(--color-text-primary, #111827);
+}
+
+.totalSignificanceBar {
+    background: var(--color-bg-secondary, #f9fafb);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sigLabel {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--color-text-primary, #374151);
+}
+
+.sigValue {
+    font-family: inherit;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sigValue.valid {
+    color: #059669;
+}
+
+.sigValue.invalid {
+    color: #EE202E;
+}
+
+.check {
+    font-size: 1rem;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.settingRow {
+    background: var(--color-bg-primary, #fff);
+    border: 1px solid var(--color-border, #f3f4f6);
+    border-radius: 8px;
+    padding: 12px;
+    transition: border-color 0.2s;
+}
+
+.settingRow:hover {
+    border-color: var(--color-primary, #EE202E);
+}
+
+.rowTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.fieldLabel {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #1f2937);
+}
+
+.fieldValue {
+    font-weight: 700;
+    color: #EE202E;
+    font-size: 0.8125rem;
+}
+
+.rowControls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.compactSlider {
+    width: 120px;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--color-border, #e5e7eb);
+    border-radius: 2px;
+    outline: none;
+    transition: background 0.2s;
+}
+
+.compactSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #EE202E;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--color-bg-primary, white);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.inputWrap {
+    flex: 0 0 100px;
+    min-width: 100px;
+}
+
+.smallInput :global(.inputField) {
+    padding: 6px 4px !important;
+    font-size: 0.9375rem !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    text-align: center !important;
+    border-radius: 8px !important;
+    border: 1.5px solid var(--color-border, #e5e7eb) !important;
+    background: var(--color-bg-primary, #ffffff) !important;
+    color: var(--color-text-primary) !important;
+    font-weight: 600 !important;
+}
+
+.smallInput :global(.inputField:focus) {
+    border-color: var(--color-primary, #EE202E) !important;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border, #f3f4f6);
+}
+
+.warningText {
+    color: #dc2626;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.doneBtn {
+    background-color: #EE202E;
+    color: white;
+    padding: 8px 24px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.doneBtn:hover {
+    background-color: #d11b28;
+}
+
+.doneBtn.disabled {
+    background-color: var(--color-bg-secondary, #f3f4f6);
+    color: var(--color-text-secondary, #9ca3af);
+    cursor: default;
+}
+
+@media (max-width: 600px) {
+    .formGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}

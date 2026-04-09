@@ -1,0 +1,55 @@
+:root {
+  /* Colors */
+  --color-primary: #EE202E;
+  --color-primary-dark: #D41B27;
+  --color-secondary: #6C757D;
+  --color-success: #28A745;
+  --color-danger: #DC3545;
+  --color-warning: #FFC107;
+  --color-info: #17A2B8;
+
+  /* Text Colors */
+  --color-text-primary: #212529;
+  --color-text-secondary: #65758B;
+  --color-text-light: #FFFFFF;
+
+  /* Background Colors */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F8F9FA;
+  --color-bg-dark: #343A40;
+  --color-header-bg: #FFFFFF;
+
+  /* Border */
+  --color-border: #DEE2E6;
+  --color-header-border: #E5E7EB;
+  --border-radius: 4px;
+
+  /* Components */
+  --color-icon-btn-hover: #F1F5F9;
+  --color-icon-btn-text: #64748B;
+  --color-icon-btn-text-hover: #0F172A;
+  --color-profile-hover: #F8FAFC;
+  --color-dropdown-bg: #FFFFFF;
+  --color-dropdown-border: #E2E8F0;
+  --color-dropdown-shadow: rgba(0, 0, 0, 0.1);
+  --theme-icon-filter: brightness(0) opacity(0.6);
+}
+
+[data-theme='dark'] {
+  --color-text-primary: #F3F4F6;
+  --color-text-secondary: #9CA3AF;
+  --color-bg-primary: #0F172A;
+  --color-bg-secondary: #1E293B;
+  --color-header-bg: #0F172A;
+  --color-header-border: #1E293B;
+  --color-border: #1E293B;
+
+  --color-icon-btn-hover: #1E293B;
+  --color-icon-btn-text: #9CA3AF;
+  --color-icon-btn-text-hover: #F3F4F6;
+  --color-profile-hover: #1E293B;
+  --color-dropdown-bg: #1E293B;
+  --color-dropdown-border: #334155;
+  --color-dropdown-shadow: rgba(0, 0, 0, 0.5);
+  --theme-icon-filter: brightness(0) invert(1) opacity(0.8);
+}

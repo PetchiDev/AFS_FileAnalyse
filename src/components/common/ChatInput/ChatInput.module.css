@@ -1,0 +1,347 @@
+.chatInputContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 20px 16px;
+  background: linear-gradient(to top, var(--color-bg-secondary) 70%, transparent);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chatInputContainerWithMessages {
+  bottom: 0;
+}
+
+.filePreviewContainer {
+  width: calc(100% - 40px);
+  max-width: 1000px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  pointer-events: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filePreviewItem {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.fileThumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.filePlaceholder {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-align: center;
+  word-break: break-all;
+  padding: 4px;
+}
+
+.removeFileButton {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-text-primary);
+  color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+  z-index: 2;
+}
+
+.removeFileButton:hover {
+  background: #EE202E;
+  color: white;
+  border-color: #EE202E;
+  transform: scale(1.1);
+}
+
+.inputWrapper {
+  width: calc(100% - 40px);
+  max-width: 1000px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  /* Keep buttons at the bottom */
+  background: var(--color-bg-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: 20px;
+  padding: 8px 12px 8px 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  pointer-events: auto;
+}
+
+.inputWrapper:focus-within {
+  border-color: #EE202E;
+  box-shadow: 0 4px 20px rgba(238, 32, 46, 0.15);
+}
+
+.leftActions {
+  position: relative;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-right: 12px;
+  margin-bottom: 2px;
+}
+
+.plusButton,
+.settingsButton {
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.plusButton:hover,
+.settingsButton:hover {
+  background: var(--color-bg-secondary, #F1F5F9);
+}
+
+.plusIcon,
+.settingsIcon {
+  width: 22px;
+  height: 22px;
+  filter: var(--theme-icon-filter);
+  transition: transform 0.2s ease;
+}
+
+.settingsButton:hover .settingsIcon {
+  transform: rotate(30deg);
+  color: #EE202E;
+}
+
+.uploadMenu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  z-index: 101;
+  animation: menuIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.menuItem:hover {
+  background: var(--color-bg-secondary);
+}
+
+.inputField {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 16px;
+  color: var(--color-text-primary);
+  outline: none;
+  resize: none;
+  max-height: 200px;
+  font-family: inherit;
+  line-height: 1.5;
+  overflow-y: auto;
+}
+
+/* Modern Scrollbar for Textarea */
+.inputField::-webkit-scrollbar {
+  width: 6px;
+}
+
+.inputField::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.inputField::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  /* Padding effect */
+  background-clip: padding-box;
+}
+
+.inputField::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+  background-clip: padding-box;
+}
+
+.inputField::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.6;
+}
+
+.sendButton {
+  background: #EE202E;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: #d31a26;
+  transform: scale(1.05);
+}
+
+.sendButton:disabled {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  filter: var(--theme-icon-filter);
+}
+
+.sendButton:not(:disabled) .searchIcon {
+  filter: brightness(0) invert(1);
+}
+
+@media (max-width: 768px) {
+  .chatInputContainer {
+    padding: 10px 16px 14px;
+  }
+
+  .inputWrapper {
+    padding: 6px 10px 6px 10px;
+    width: calc(100% - 24px);
+  }
+
+  .inputField {
+    font-size: 15px;
+  }
+
+  .sendButton {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chatInputContainer {
+    padding: 8px 12px 12px;
+  }
+
+  .inputWrapper {
+    width: calc(100% - 16px);
+    padding: 5px 8px;
+    border-radius: 16px;
+  }
+
+  .inputField {
+    font-size: 14px;
+    padding: 8px 0;
+  }
+
+  .leftActions {
+    gap: 4px !important;
+    margin-right: 8px;
+  }
+
+  .plusButton,
+  .settingsButton {
+    width: 30px;
+    height: 30px;
+  }
+
+  .plusIcon,
+  .settingsIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sendButton {
+    width: 30px;
+    height: 30px;
+  }
+}
