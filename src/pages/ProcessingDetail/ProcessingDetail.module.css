@@ -1,0 +1,287 @@
+.detailWrapper {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  animation: slideDown 0.5s ease-out;
+}
+
+.headerTitle h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.headerTitle p {
+  color: #64748b;
+  margin: 0.25rem 0 0 0;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.headerActions {
+  margin-left: auto;
+}
+
+.iconBtn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.iconBtn:hover {
+  border-color: #cbd5e1;
+  color: #ee202e;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: #fffafa;
+}
+
+.downloadBtn {
+  background: #ee202e;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.downloadBtn:hover {
+  background: #d41b29;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(238, 32, 46, 0.25);
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.fullWidth {
+  grid-column: span 2;
+}
+
+/* Card Styling */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cardHeader h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.icon {
+  color: #ee202e;
+  background: #fff1f2;
+  padding: 8px;
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+}
+
+/* Info Elements */
+.fieldGroup {
+  margin-bottom: 1.25rem;
+}
+
+.fieldGroup:last-child {
+  margin-bottom: 0;
+}
+
+.fieldGroup label, .infoItem label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.mainValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.fieldGroup p, .infoItem span {
+  color: #334155;
+  line-height: 1.6;
+  margin: 0;
+  word-break: break-all;
+}
+
+.statsGrid + .fieldGroup {
+  margin-top: 1.5rem;
+}
+
+/* Grids inside cards */
+.infoGrid, .statsGrid, .wireGrid, .commGrid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.infoGrid { grid-template-columns: repeat(3, 1fr); }
+.statsGrid { grid-template-columns: repeat(2, 1fr); }
+.wireGrid { grid-template-columns: repeat(2, 1fr); }
+.commGrid { grid-template-columns: repeat(2, 1fr); }
+
+.statBox {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.statValue {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.withIcon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #475569;
+}
+
+.statusBadge {
+  background: #ecfdf5;
+  color: #059669;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+/* Loading & Error States */
+.loadingWrapper, .errorWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #ee202e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.errorWrapper h2 {
+  color: #0f172a;
+}
+
+.backBtn {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .fullWidth {
+    grid-column: span 1;
+  }
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .detailWrapper {
+    padding: 1rem;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .headerActions {
+    margin-left: 0;
+    width: 100%;
+  }
+  .downloadBtn {
+    width: 100%;
+    justify-content: center;
+  }
+  .wireGrid, .commGrid, .infoGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

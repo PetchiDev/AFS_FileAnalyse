@@ -11,6 +11,7 @@ import { useMsal } from '@azure/msal-react';
 const Dashboard = lazyRouteComponent(() => import('@/pages/Dashboard/Dashboard'));
 const Upload = lazyRouteComponent(() => import('@/pages/Upload'));
 const Reports = lazyRouteComponent(() => import('@/pages/Reports'));
+const ProcessingDetail = lazyRouteComponent(() => import('@/pages/ProcessingDetail/ProcessingDetail'));
 
 const AuthenticatedLayout = () => {
   const { accounts } = useMsal();
@@ -68,11 +69,19 @@ const reportsRoute = createRoute({
   component: Reports
 });
 
+// Processing Detail page
+const processingDetailRoute = createRoute({
+  getParentRoute: () => authLayoutRoute,
+  path: ROUTES.DETAILS,
+  component: ProcessingDetail
+});
+
 const routeTree = rootRoute.addChildren([
   authLayoutRoute.addChildren([
     indexRoute,
     uploadRoute,
-    reportsRoute
+    reportsRoute,
+    processingDetailRoute
   ])
 ]);
 

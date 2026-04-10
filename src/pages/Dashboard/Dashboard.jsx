@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { gsap } from 'gsap';
 import { toast } from 'react-toastify';
 import {
@@ -44,6 +45,8 @@ const Dashboard = () => {
     processResult, setProcessResult,
     resetUpload
   } = useAppStore();
+
+  const navigate = useNavigate();
 
   const containerRef = useRef(null);
   const tabsRef = useRef(null);
@@ -131,6 +134,33 @@ const Dashboard = () => {
       loadHistory(currentPage);
     }
   }, [activeTab, currentPage]);
+
+  const handleDownload = async (url, fileName) => {
+    if (!url) return;
+    
+    try {
+      toast.info('Downloading file...');
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      
+      const link = document.body.appendChild(document.createElement('a'));
+      link.href = objectUrl;
+      link.download = fileName || 'download';
+      link.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        URL.revokeObjectURL(objectUrl);
+        document.body.removeChild(link);
+      }, 100);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to download file');
+      // Fallback to simple window open if blob fetch fails
+      window.open(url, '_blank');
+    }
+  };
 
   const startProcessing = () => {
     if (files.length === 0) return;
@@ -234,7 +264,15 @@ const Dashboard = () => {
 
   const SortIcon = ({ column }) => {
     if (sortConfig.key !== column) return null;
-    return sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />;
+    return (
+      <span className={styles.sortType}>
+        {column === 'fileName' 
+          ? (sortConfig.direction === 'asc' ? ' (A-Z)' : ' (Z-A)')
+          : (sortConfig.direction === 'asc' ? ' (Oldest)' : ' (Newest)')
+        }
+        {sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+      </span>
+    );
   };
 
   return (
@@ -364,22 +402,9 @@ const Dashboard = () => {
                   >
                     <Eye size={18} /> View File
                   </button>
-                  <button
-                    className={styles.downloadBtn}
-                    onClick={() => {
-                      if (processResult?.output_file?.sas_url) {
-                        // For download, we often use a hidden anchor with download attribute or just open link
-                        // If sas_url is a direct blob link, we might need a specific download trigger if window.open just views it
-                        const link = document.createElement('a');
-                        link.href = processResult.output_file.sas_url;
-                        link.setAttribute('download', processResult.output_file.original_filename);
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      } else {
-                        toast.info('Downloading file...');
-                      }
-                    }}
+                  <button 
+                    className={styles.downloadBtn} 
+                    onClick={() => handleDownload(processResult?.output_file?.sas_url, processResult?.output_file?.original_filename)}
                   >
                     <Download size={18} /> Download File
                   </button>
@@ -454,27 +479,19 @@ const Dashboard = () => {
                             className={styles.actionBtn}
                             title="View"
                             onClick={() => {
-                              if (report.output_file?.sas_url) {
-                                window.open(report.output_file.sas_url, '_blank');
-                              }
+                              navigate({ 
+                                to: '/processings/$id', 
+                                params: { id: report.processing_id || report.id } 
+                              });
                             }}
                           >
                             <Eye size={16} />
                             <span>View</span>
                           </button>
-                          <button
-                            className={styles.actionBtn}
+                          <button 
+                            className={styles.actionBtn} 
                             title="Download"
-                            onClick={() => {
-                              if (report.output_file?.sas_url) {
-                                const link = document.createElement('a');
-                                link.href = report.output_file.sas_url;
-                                link.setAttribute('download', report.output_file.original_filename);
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                              }
-                            }}
+                            onClick={() => handleDownload(report.output_file?.sas_url, report.output_file?.original_filename)}
                           >
                             <Download size={16} />
                             <span>Download</span>

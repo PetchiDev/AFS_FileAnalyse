@@ -386,6 +386,20 @@ export const analysisService = {
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error fetching processing history');
         }
+    },
+    
+    /**
+     * Get processing detail by ID
+     * @param {string} id - Processing ID
+     * @returns {Promise<Object>} Detail record
+     */
+    getProcessingDetail: async (id) => {
+        try {
+            const response = await apiClient.get(`${API.ENDPOINTS.PROCESSING_DETAIL}${id}`);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error fetching processing details');
+        }
     }
 };
 
