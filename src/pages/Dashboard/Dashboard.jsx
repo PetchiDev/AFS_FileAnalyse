@@ -27,6 +27,7 @@ import {
   PROCESSING_STEPS_LIST,
   MESSAGES
 } from '@/config/constants';
+import DeleteConfirmationModal from '@/components/common/DeleteConfirmationModal/DeleteConfirmationModal';
 import styles from './Dashboard.module.css';
 
 const Dashboard = () => {
@@ -54,6 +55,9 @@ const Dashboard = () => {
   const fileInputRef = useRef(null);
   const [sortConfig, setSortConfig] = useState({ key: 'fileName', direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const ITEMS_PER_PAGE = 5;
 
   // Entrance Animation
@@ -103,7 +107,7 @@ const Dashboard = () => {
 
   const { accounts } = useMsal();
 
-  const loadHistory = async (page = 1) => {
+  const loadHistory = async (page = 1, search = searchQuery) => {
     const isBypassActive = import.meta.env.VITE_BYPASS_AUTH === 'true';
     const objectId = accounts[0]?.localAccountId || (isBypassActive ? 'dev-user-001' : null);
 
@@ -114,7 +118,8 @@ const Dashboard = () => {
       const data = await analysisService.getProcessings({
         object_id: objectId,
         page_number: page,
-        page_size: ITEMS_PER_PAGE
+        page_size: ITEMS_PER_PAGE,
+        search_filename: search || undefined
       });
       setReports(data.records || []);
       setReportsPagination({
@@ -135,30 +140,30 @@ const Dashboard = () => {
     }
   }, [activeTab, currentPage]);
 
-  const handleDownload = async (url, fileName) => {
-    if (!url) return;
+  // Handle server-side search with 2s debounce
+  useEffect(() => {
+    if (activeTab !== 'reports') return;
+
+    const timer = setTimeout(() => {
+      setCurrentPage(1); // Reset to first page
+      loadHistory(1, searchQuery);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, activeTab]);
+
+  const handleDownload = (url) => {
+    if (!url) {
+      toast.error('Download link not available');
+      return;
+    }
 
     try {
       toast.info('Downloading file...');
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-
-      const link = document.body.appendChild(document.createElement('a'));
-      link.href = objectUrl;
-      link.download = fileName || 'download';
-      link.click();
-
-      // Cleanup
-      setTimeout(() => {
-        URL.revokeObjectURL(objectUrl);
-        document.body.removeChild(link);
-      }, 100);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to download file');
-      // Fallback to simple window open if blob fetch fails
       window.open(url, '_blank');
+    } catch (err) {
+      console.error('Download error:', err);
+      toast.error('Failed to open download link');
     }
   };
 
@@ -211,6 +216,32 @@ const Dashboard = () => {
     process();
   };
 
+  const handleDeleteClick = (report) => {
+    setReportToDelete(report);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!reportToDelete) return;
+
+    const isBypassActive = import.meta.env.VITE_BYPASS_AUTH === 'true';
+    const objectId = accounts[0]?.localAccountId || (isBypassActive ? 'dev-user-001' : null);
+
+    setIsDeleting(true);
+    try {
+      await analysisService.deleteProcessing(reportToDelete.id, objectId);
+      toast.success('Report deleted successfully');
+      loadHistory(currentPage);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || 'Failed to delete report');
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+      setReportToDelete(null);
+    }
+  };
+
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -224,40 +255,6 @@ const Dashboard = () => {
     setCurrentPage(1); // Reset to first page on search
   }, [searchQuery]);
 
-  const getRecentReportsCount = useMemo(() => {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    return reports.filter(r => new Date(r.created_at) >= sevenDaysAgo).length;
-  }, [reports]);
-
-  const processedData = useMemo(() => {
-    // 1. Filter
-    let result = reports.filter(r => {
-      const fileName = r.output_file?.original_filename || 'Unknown';
-      return fileName.toLowerCase().includes(searchQuery.toLowerCase());
-    });
-
-    // 2. Sort
-    result.sort((a, b) => {
-      if (sortConfig.key === 'fileName') {
-        const nameA = (a.output_file?.original_filename || '').toLowerCase();
-        const nameB = (b.output_file?.original_filename || '').toLowerCase();
-        if (nameA < nameB) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (nameA > nameB) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-      }
-
-      if (sortConfig.key === 'createdAt') {
-        const dateA = new Date(a.created_at);
-        const dateB = new Date(b.created_at);
-        return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
-      }
-
-      return 0;
-    });
-
-    return result;
-  }, [reports, searchQuery, sortConfig]);
 
   const paginatedData = reports;
   const totalPages = reportsPagination.totalPages;
@@ -417,12 +414,13 @@ const Dashboard = () => {
           <div className={styles.card}>
             <div className={styles.summaryStats}>
               <div className={styles.statCard}>
-                <span>Total</span>
-                <p>{reports.length}</p>
-              </div>
-              <div className={styles.statCard}>
-                <span>Recently Added Reports (Last 7 days)</span>
-                <p>{getRecentReportsCount}</p>
+                <div className={styles.statIcon}>
+                  <FileText size={20} />
+                </div>
+                <div className={styles.statInfo}>
+                  <span>Total Reports</span>
+                  <p>{reportsPagination.totalRecords || 0}</p>
+                </div>
               </div>
             </div>
 
@@ -459,47 +457,57 @@ const Dashboard = () => {
                   {paginatedData.map(report => (
                     <tr key={report.id}>
                       <td className={styles.fileNameCell} data-label="File Name">
-                        <div className={styles.fileIcon}>
-                          <FileText size={18} />
+                        <div className={styles.cellValue}>
+                          <div className={styles.fileIcon}>
+                            <FileText size={18} />
+                          </div>
+                          <span title={report.output_file?.original_filename || 'Unknown'}>
+                            {report.output_file?.original_filename || 'Unknown'}
+                          </span>
                         </div>
-                        <span title={report.output_file?.original_filename || 'Unknown'}>
-                          {report.output_file?.original_filename || 'Unknown'}
-                        </span>
                       </td>
                       <td className={styles.dateCell} data-label="Created At">
-                        {new Date(report.created_at).toLocaleDateString(undefined, {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
+                        <div className={styles.cellValue}>
+                          {new Date(report.created_at).toLocaleDateString(undefined, {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </div>
                       </td>
                       <td data-label="Actions">
-                        <div className={styles.actionGroup}>
-                          <button
-                            className={styles.actionBtn}
-                            title="View"
-                            onClick={() => {
-                              navigate({
-                                to: '/processings/$id',
-                                params: { id: report.processing_id || report.id }
-                              });
-                            }}
-                          >
-                            <Eye size={16} />
-                            <span>View</span>
-                          </button>
-                          <button
-                            className={styles.actionBtn}
-                            title="Download"
-                            onClick={() => handleDownload(report.output_file?.sas_url, report.output_file?.original_filename)}
-                          >
-                            <Download size={16} />
-                            <span>Download</span>
-                          </button>
-                          <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete">
-                            <Trash2 size={16} />
-                            <span>Delete</span>
-                          </button>
+                        <div className={styles.cellValue}>
+                          <div className={styles.actionGroup}>
+                            <button
+                              className={styles.actionBtn}
+                              title="View"
+                              onClick={() => {
+                                navigate({
+                                  to: '/processings/$id',
+                                  params: { id: report.processing_id || report.id }
+                                });
+                              }}
+                            >
+                              <Eye size={16} />
+                              <span>View</span>
+                            </button>
+                            <button
+                              className={styles.actionBtn}
+                              title="Download"
+                              onClick={() => handleDownload(report.output_file?.sas_url)}
+                            >
+                              <Download size={16} />
+                              <span>Download</span>
+                            </button>
+                            <button 
+                              className={`${styles.actionBtn} ${styles.deleteBtn}`} 
+                              title="Delete"
+                              onClick={() => handleDeleteClick(report)}
+                            >
+                              <Trash2 size={16} />
+                              <span>Delete</span>
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -535,7 +543,7 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {processedData.length === 0 && (
+              {reports.length === 0 && !reportsLoading && (
                 <div className={styles.emptyState}>
                   <AlertCircle size={32} />
                   <p>No reports found.</p>
@@ -545,6 +553,14 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        itemTitle={reportToDelete?.output_file?.original_filename || 'this report'}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

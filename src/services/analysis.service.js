@@ -376,7 +376,7 @@ export const analysisService = {
     
     /**
      * Get processing history
-     * @param {Object} payload - { object_id, page_number, page_size }
+     * @param {Object} payload - { object_id, page_number, page_size, search_filename }
      * @returns {Promise<Object>} History records
      */
     getProcessings: async (payload) => {
@@ -399,6 +399,22 @@ export const analysisService = {
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error fetching processing details');
+        }
+    },
+    /**
+     * Delete a processing record
+     * @param {string} id - Processing ID
+     * @param {string} objectId - User Object ID
+     * @returns {Promise<Object>} Confirmation message
+     */
+    deleteProcessing: async (id, objectId) => {
+        try {
+            const response = await apiClient.delete(`${API.ENDPOINTS.PROCESSING_DETAIL}${id}`, {
+                params: { object_id: objectId }
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error deleting processing record');
         }
     }
 };

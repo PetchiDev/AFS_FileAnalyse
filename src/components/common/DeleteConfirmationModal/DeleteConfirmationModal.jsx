@@ -1,13 +1,15 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+import { AlertTriangle, X } from 'lucide-react';
 import styles from './DeleteConfirmationModal.module.css';
 
 const DeleteConfirmationModal = ({
     isOpen,
     onClose,
     onConfirm,
-    title = "Delete chat?",
-    chatTitle = "",
+    title = "Delete Processing?",
+    itemTitle = "",
     isLoading = false
 }) => {
     if (!isOpen) return null;
@@ -18,16 +20,28 @@ const DeleteConfirmationModal = ({
         }
     };
 
-    return (
+    const modalContent = (
         <div className={styles.overlay} onClick={handleOverlayClick}>
             <div className={styles.modal} role="dialog" aria-modal="true">
+                <button 
+                  className={styles.closeBtn} 
+                  onClick={onClose}
+                  disabled={isLoading}
+                  title="Close"
+                >
+                  <X size={20} />
+                </button>
+
                 <div className={styles.content}>
+                    <div className={styles.iconWrapper}>
+                      <AlertTriangle size={32} />
+                    </div>
                     <h2 className={styles.title}>{title}</h2>
                     <p className={styles.message}>
-                        This will delete <span className={styles.chatName}>{chatTitle}</span>.
+                        Are you sure you want to delete <span className={styles.itemName}>{itemTitle}</span>? This action cannot be undone.
                     </p>
-
                 </div>
+
                 <div className={styles.footer}>
                     <button
                         className={styles.cancelButton}
@@ -41,12 +55,14 @@ const DeleteConfirmationModal = ({
                         onClick={onConfirm}
                         disabled={isLoading}
                     >
-                        {isLoading ? 'Deleting...' : 'Delete'}
+                        {isLoading ? 'Deleting...' : 'Delete Permanently'}
                     </button>
                 </div>
             </div>
         </div>
     );
+
+    return ReactDOM.createPortal(modalContent, document.body);
 };
 
 DeleteConfirmationModal.propTypes = {
@@ -54,7 +70,7 @@ DeleteConfirmationModal.propTypes = {
     onClose: PropTypes.func.isRequired,
     onConfirm: PropTypes.func.isRequired,
     title: PropTypes.string,
-    chatTitle: PropTypes.string,
+    itemTitle: PropTypes.string,
     isLoading: PropTypes.bool
 };
 
