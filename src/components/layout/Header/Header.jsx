@@ -11,7 +11,7 @@ import LogoLight from '@/assets/icons/AFS-Logo-RGB_HR.jpg';
 import LogoWhiteText from '@/assets/icons/AFS-Logo-White-Text.png';
 import styles from './Header.module.css';
 
-const Header = ({ userName = 'John Doe', userEmail = 'john@afs.com', onToggleSidebar, isSidebarOpen }) => {
+const Header = ({ userName = 'John Doe', userEmail = 'john@afs.com' }) => {
   const { instance } = useMsal();
   const { themeMode, toggleTheme } = useTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -80,18 +80,6 @@ const Header = ({ userName = 'John Doe', userEmail = 'john@afs.com', onToggleSid
     <header ref={headerRef} className={styles.header}>
       {/* Left Section: Mobile hamburger + Logo */}
       <div className={styles.leftSection}>
-        <button
-          className={styles.mobileMenuButton}
-          onClick={onToggleSidebar}
-          aria-label="Toggle menu"
-          aria-expanded={isSidebarOpen}
-        >
-          <span className={`${styles.hamburgerIcon} ${isSidebarOpen ? styles.hamburgerOpen : ''}`}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
-        </button>
 
         <Link to={ROUTES.UPLOAD} search={{}} className={styles.logoLink}>
           {themeMode === 'dark' ? (
@@ -137,9 +125,7 @@ const Header = ({ userName = 'John Doe', userEmail = 'john@afs.com', onToggleSid
 
 Header.propTypes = {
   userName: PropTypes.string,
-  userEmail: PropTypes.string,
-  onToggleSidebar: PropTypes.func,
-  isSidebarOpen: PropTypes.bool
+  userEmail: PropTypes.string
 };
 
 export default Header;

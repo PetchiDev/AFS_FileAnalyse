@@ -1,8 +1,6 @@
 import { createRouter, createRoute, createRootRoute, Outlet, lazyRouteComponent } from '@tanstack/react-router';
-import { useState, useCallback } from 'react';
 import { ROUTES } from '@/config/constants';
 import Header from '@/components/layout/Header';
-import Sidebar from '@/components/layout/Sidebar';
 import '@/styles/globals.css';
 import styles from '../App.module.css';
 
@@ -10,22 +8,14 @@ import AuthGuard from '@/components/common/AuthGuard/AuthGuard';
 import { useMsal } from '@azure/msal-react';
 
 // Lazy load pages
+const Dashboard = lazyRouteComponent(() => import('@/pages/Dashboard/Dashboard'));
 const Upload = lazyRouteComponent(() => import('@/pages/Upload'));
 const Reports = lazyRouteComponent(() => import('@/pages/Reports'));
 
 const AuthenticatedLayout = () => {
   const { accounts } = useMsal();
   const isBypassActive = import.meta.env.VITE_BYPASS_AUTH === 'true';
-  const user = accounts[0] || (isBypassActive ? { name: 'Local Developer', username: 'dev@local' } : null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const handleToggleSidebar = useCallback(() => {
-    setIsSidebarOpen((prev) => !prev);
-  }, []);
-
-  const handleCloseSidebar = useCallback(() => {
-    setIsSidebarOpen(false);
-  }, []);
+  const user = accounts[0] || (isBypassActive ? { name: 'Jhon Doe', username: 'dev@local' } : null);
 
   return (
     <AuthGuard>
@@ -34,16 +24,10 @@ const AuthenticatedLayout = () => {
         <Header
           userName={user?.name || 'User'}
           userEmail={user?.username || ''}
-          onToggleSidebar={handleToggleSidebar}
-          isSidebarOpen={isSidebarOpen}
         />
 
-        {/* Body — sidebar + content side by side */}
+        {/* Body — content fills remaining space */}
         <div className={styles.bodyWrapper}>
-          <Sidebar
-            isOpen={isSidebarOpen}
-            onClose={handleCloseSidebar}
-          />
           <main className={styles.contentArea}>
             <Outlet />
           </main>
@@ -63,11 +47,11 @@ const authLayoutRoute = createRoute({
   component: AuthenticatedLayout
 });
 
-// Index route — defaults to Upload
+// Index route — defaults to Dashboard
 const indexRoute = createRoute({
   getParentRoute: () => authLayoutRoute,
   path: ROUTES.HOME,
-  component: Upload
+  component: Dashboard
 });
 
 // Upload page
