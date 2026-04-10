@@ -28,6 +28,7 @@ import {
   MESSAGES
 } from '@/config/constants';
 import DeleteConfirmationModal from '@/components/common/DeleteConfirmationModal/DeleteConfirmationModal';
+import { getSafeViewerUrl } from '@/utils/fileUtils';
 import styles from './Dashboard.module.css';
 
 const Dashboard = () => {
@@ -152,15 +153,20 @@ const Dashboard = () => {
     return () => clearTimeout(timer);
   }, [searchQuery, activeTab]);
 
-  const handleDownload = (url) => {
+  const handleDownload = (e, url) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     if (!url) {
       toast.error('Download link not available');
       return;
     }
 
     try {
-      toast.info('Downloading file...');
-      window.open(url, '_blank');
+      const viewerUrl = getSafeViewerUrl(url);
+      window.open(viewerUrl, '_blank');
     } catch (err) {
       console.error('Download error:', err);
       toast.error('Failed to open download link');
@@ -389,9 +395,10 @@ const Dashboard = () => {
                 <div className={styles.successActions}>
                   <button
                     className={styles.viewBtn}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       if (processResult?.output_file?.sas_url) {
-                        window.open(processResult.output_file.sas_url, '_blank');
+                        window.open(getSafeViewerUrl(processResult.output_file.sas_url), '_blank');
                       } else {
                         toast.info('Opening preview...');
                       }
@@ -401,7 +408,7 @@ const Dashboard = () => {
                   </button>
                   <button
                     className={styles.downloadBtn}
-                    onClick={() => handleDownload(processResult?.output_file?.sas_url, processResult?.output_file?.original_filename)}
+                    onClick={(e) => handleDownload(e, processResult?.output_file?.sas_url)}
                   >
                     <Download size={18} /> Download File
                   </button>
@@ -481,7 +488,8 @@ const Dashboard = () => {
                             <button
                               className={styles.actionBtn}
                               title="View"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 navigate({
                                   to: '/processings/$id',
                                   params: { id: report.processing_id || report.id }
@@ -494,7 +502,7 @@ const Dashboard = () => {
                             <button
                               className={styles.actionBtn}
                               title="Download"
-                              onClick={() => handleDownload(report.output_file?.sas_url)}
+                              onClick={(e) => handleDownload(e, report.output_file?.sas_url)}
                             >
                               <Download size={16} />
                               <span>Download</span>

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import analysisService from '@/services/analysis.service';
+import { getSafeViewerUrl } from '@/utils/fileUtils';
 import styles from './ProcessingDetail.module.css';
 
 const ProcessingDetail = () => {
@@ -75,7 +76,11 @@ const ProcessingDetail = () => {
           {output_file?.sas_url && (
             <button
               className={styles.downloadBtn}
-              onClick={() => window.open(output_file.sas_url, '_blank')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.open(getSafeViewerUrl(output_file.sas_url), '_blank');
+              }}
             >
               <Download size={18} /> Download Result
             </button>
