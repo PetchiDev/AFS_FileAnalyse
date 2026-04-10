@@ -346,6 +346,46 @@ export const analysisService = {
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error deleting research history');
         }
+    },
+    
+    /**
+     * Process files for schedule generation
+     * @param {FormData} formData - Contains files array and object_id
+     * @returns {Promise<Object>} Processing result
+     */
+    processFiles: async (formData) => {
+        try {
+            const response = await apiClient.post(API.ENDPOINTS.PROCESS_FILES, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const data = error.response.data;
+                const serverError = data.message || 'Server error occurred during processing';
+                throw new Error(serverError);
+            } else if (error.request) {
+                throw new Error('No response from server. Please check your connection.');
+            } else {
+                throw new Error(error.message || 'Error initiating processing');
+            }
+        }
+    },
+    
+    /**
+     * Get processing history
+     * @param {Object} payload - { object_id, page_number, page_size }
+     * @returns {Promise<Object>} History records
+     */
+    getProcessings: async (payload) => {
+        try {
+            const response = await apiClient.post(API.ENDPOINTS.PROCESSINGS, payload);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error fetching processing history');
+        }
     }
 };
 

@@ -13,10 +13,13 @@ export const useAppStore = create((set) => ({
   currentStep: -1,
   isComplete: false,
   processedFileName: '',
+  processResult: null,
   error: null,
 
   // Reports State
-  reports: [...MOCK_REPORTS_DATA],
+  reports: [],
+  reportsLoading: false,
+  reportsPagination: { totalRecords: 0, totalPages: 1 },
   searchQuery: '',
 
   // Actions
@@ -26,9 +29,14 @@ export const useAppStore = create((set) => ({
   setCurrentStep: (currentStep) => set({ currentStep }),
   setIsComplete: (isComplete) => set({ isComplete }),
   setProcessedFileName: (processedFileName) => set({ processedFileName }),
+  setProcessResult: (processResult) => set({ processResult }),
   setError: (error) => set({ error }),
   setSearchQuery: (query) => set({ searchQuery: query }),
   
+  setReports: (reports) => set({ reports }),
+  setReportsLoading: (loading) => set({ reportsLoading: loading }),
+  setReportsPagination: (pagination) => set({ reportsPagination: pagination }),
+
   addReport: (report) => set((state) => ({ 
     reports: [report, ...state.reports] 
   })),
@@ -39,6 +47,7 @@ export const useAppStore = create((set) => ({
     currentStep: -1,
     isComplete: false,
     processedFileName: '',
+    processResult: null,
     error: null
   })
 }));

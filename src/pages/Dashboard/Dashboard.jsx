@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { toast } from 'react-toastify';
-import { 
-  FileUp, 
-  BarChart3, 
-  Download, 
-  Trash2, 
-  CheckCircle2, 
+import {
+  FileUp,
+  BarChart3,
+  Download,
+  Trash2,
+  CheckCircle2,
   AlertCircle,
   Search,
   Plus,
@@ -14,13 +14,17 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileText,
+  Eye
 } from 'lucide-react';
+import { useMsal } from '@azure/msal-react';
+import analysisService from '@/services/analysis.service';
 import { useAppStore } from '@/store/useAppStore';
-import { 
-  FILE_UPLOAD, 
-  PROCESSING_STEPS_LIST, 
-  MESSAGES 
+import {
+  FILE_UPLOAD,
+  PROCESSING_STEPS_LIST,
+  MESSAGES
 } from '@/config/constants';
 import styles from './Dashboard.module.css';
 
@@ -33,8 +37,11 @@ const Dashboard = () => {
     currentStep, setCurrentStep,
     isComplete, setIsComplete,
     processedFileName, setProcessedFileName,
-    reports, addReport,
+    reports, setReports,
+    reportsLoading, setReportsLoading,
+    reportsPagination, setReportsPagination,
     searchQuery, setSearchQuery,
+    processResult, setProcessResult,
     resetUpload
   } = useAppStore();
 
@@ -48,8 +55,8 @@ const Dashboard = () => {
 
   // Entrance Animation
   useEffect(() => {
-    gsap.fromTo(containerRef.current, 
-      { opacity: 0, y: 20 }, 
+    gsap.fromTo(containerRef.current,
+      { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
     );
   }, []);
@@ -91,33 +98,86 @@ const Dashboard = () => {
     }
   };
 
+  const { accounts } = useMsal();
+
+  const loadHistory = async (page = 1) => {
+    const isBypassActive = import.meta.env.VITE_BYPASS_AUTH === 'true';
+    const objectId = accounts[0]?.localAccountId || (isBypassActive ? 'dev-user-001' : null);
+
+    if (!objectId) return;
+
+    setReportsLoading(true);
+    try {
+      const data = await analysisService.getProcessings({
+        object_id: objectId,
+        page_number: page,
+        page_size: ITEMS_PER_PAGE
+      });
+      setReports(data.records || []);
+      setReportsPagination({
+        totalRecords: data.total_records || 0,
+        totalPages: data.total_pages || 1
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load processing history');
+    } finally {
+      setReportsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'reports') {
+      loadHistory(currentPage);
+    }
+  }, [activeTab, currentPage]);
+
   const startProcessing = () => {
     if (files.length === 0) return;
-    
+
     setIsProcessing(true);
     setCurrentStep(0);
-    
+
     const process = async () => {
-      for (let i = 0; i < PROCESSING_STEPS_LIST.length; i++) {
-        setCurrentStep(i);
-        await new Promise(r => setTimeout(r, 1500));
+      try {
+        // Build FormData
+        const formData = new FormData();
+        files.forEach(file => formData.append('files', file));
+
+        // Get object_id (bypass check)
+        const isBypassActive = import.meta.env.VITE_BYPASS_AUTH === 'true';
+        const objectId = accounts[0]?.localAccountId || (isBypassActive ? 'dev-user-001' : null);
+
+        if (objectId) {
+          formData.append('object_id', objectId);
+        }
+
+        // Processing steps simulation (visual only)
+        const stepInterval = 800;
+        for (let i = 0; i < PROCESSING_STEPS_LIST.length - 1; i++) {
+          setCurrentStep(i);
+          await new Promise(r => setTimeout(r, stepInterval));
+        }
+
+        // Real API Call
+        const result = await analysisService.processFiles(formData);
+
+        setProcessResult(result);
+        setProcessedFileName(result.output_file?.original_filename || 'processed_output.xlsx');
+        setIsProcessing(false);
+        setIsComplete(true);
+        setCurrentStep(3); // Ready
+
+        toast.success(MESSAGES.SUCCESS.PROCESSING);
+
+        // Zero sync: refresh history
+        loadHistory();
+      } catch (error) {
+        setIsProcessing(false);
+        toast.error(error.message || MESSAGES.ERROR.PROCESSING_FAILED);
       }
-      
-      const fileName = files[0].name.replace(/\.[^/.]+$/, "") + "_processed.xlsx";
-      setProcessedFileName(fileName);
-      setIsProcessing(false);
-      setIsComplete(true);
-      
-      addReport({
-        id: Date.now(),
-        fileName,
-        fileType: 'xlsx',
-        createdAt: new Date().toISOString()
-      });
-      
-      toast.success(MESSAGES.SUCCESS.PROCESSING);
     };
-    
+
     process();
   };
 
@@ -137,42 +197,40 @@ const Dashboard = () => {
   const getRecentReportsCount = useMemo(() => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    return reports.filter(r => new Date(r.createdAt) >= sevenDaysAgo).length;
+    return reports.filter(r => new Date(r.created_at) >= sevenDaysAgo).length;
   }, [reports]);
 
   const processedData = useMemo(() => {
     // 1. Filter
-    let result = reports.filter(r => 
-      r.fileName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    let result = reports.filter(r => {
+      const fileName = r.output_file?.original_filename || 'Unknown';
+      return fileName.toLowerCase().includes(searchQuery.toLowerCase());
+    });
 
     // 2. Sort
     result.sort((a, b) => {
       if (sortConfig.key === 'fileName') {
-        const nameA = a.fileName.toLowerCase();
-        const nameB = b.fileName.toLowerCase();
+        const nameA = (a.output_file?.original_filename || '').toLowerCase();
+        const nameB = (b.output_file?.original_filename || '').toLowerCase();
         if (nameA < nameB) return sortConfig.direction === 'asc' ? -1 : 1;
         if (nameA > nameB) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
       }
-      
+
       if (sortConfig.key === 'createdAt') {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
+        const dateA = new Date(a.created_at);
+        const dateB = new Date(b.created_at);
         return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
       }
-      
+
       return 0;
     });
 
     return result;
   }, [reports, searchQuery, sortConfig]);
 
-  const totalPages = Math.ceil(processedData.length / ITEMS_PER_PAGE);
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return processedData.slice(start, start + ITEMS_PER_PAGE);
-  }, [processedData, currentPage]);
+  const paginatedData = reports;
+  const totalPages = reportsPagination.totalPages;
 
   const SortIcon = ({ column }) => {
     if (sortConfig.key !== column) return null;
@@ -189,14 +247,17 @@ const Dashboard = () => {
 
         <nav ref={tabsRef} className={styles.tabBar}>
           <div ref={indicatorRef} className={styles.activeIndicator} />
-          <button 
+          <button
             className={`${styles.tabBtn} ${activeTab === 'upload' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('upload')}
+            onClick={() => {
+              resetUpload();
+              setActiveTab('upload');
+            }}
           >
             <FileUp size={18} />
             <span>Upload</span>
           </button>
-          <button 
+          <button
             className={`${styles.tabBtn} ${activeTab === 'reports' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('reports')}
           >
@@ -218,7 +279,7 @@ const Dashboard = () => {
 
             {!isProcessing && !isComplete ? (
               <div className={styles.uploadMain}>
-                <div 
+                <div
                   className={`${styles.dropzone} ${isDragging ? styles.dragging : ''}`}
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                   onDragLeave={() => setIsDragging(false)}
@@ -228,7 +289,7 @@ const Dashboard = () => {
                   <input type="file" hidden ref={fileInputRef} multiple onChange={handleFileSelect} />
                   <Plus size={40} className={styles.plusIcon} />
                   <p>Drop files here or click to browse</p>
-                  <span>Supported: PDF, DOCX, XLSX</span>
+                  <span>Supported: (.docx) (.doc) (.pdf) (.msg)</span>
                 </div>
 
                 {files.length > 0 && (
@@ -237,7 +298,7 @@ const Dashboard = () => {
                       <div key={i} className={styles.fileItem}>
                         <FileUp size={16} />
                         <span className={styles.fileName}>{f.name}</span>
-                        <button 
+                        <button
                           className={styles.removeFileBtn}
                           onClick={(e) => { e.stopPropagation(); setFiles(files.filter((_, idx) => idx !== i)); }}
                         >
@@ -248,8 +309,8 @@ const Dashboard = () => {
                   </div>
                 )}
 
-                <button 
-                  className={styles.mainBtn} 
+                <button
+                  className={styles.mainBtn}
                   disabled={files.length === 0}
                   onClick={startProcessing}
                 >
@@ -260,8 +321,8 @@ const Dashboard = () => {
               <div className={styles.processingSection}>
                 <h3>{PROCESSING_STEPS_LIST[currentStep]?.label || 'Preparing...'}</h3>
                 <div className={styles.progressBar}>
-                  <div 
-                    className={styles.progressFill} 
+                  <div
+                    className={styles.progressFill}
                     style={{ width: `${((currentStep + 1) / PROCESSING_STEPS_LIST.length) * 100}%` }}
                   />
                 </div>
@@ -270,17 +331,59 @@ const Dashboard = () => {
             ) : (
               <div className={styles.successSection}>
                 <CheckCircle2 size={48} className={styles.successIcon} />
-                <h3>Success!</h3>
-                <p>Your file has been processed successfully.</p>
-                <div className={styles.resultCard}>
-                  <BarChart3 size={20} />
-                  <span>{processedFileName}</span>
+                <h3>Processing Complete!</h3>
+                <p>Your file has been successfully processed and is ready for download.</p>
+
+                <div className={styles.resultList}>
+                  {processResult?.output_file && (
+                    <div className={styles.resultCard}>
+                      <FileText size={20} />
+                      <span title={processResult.output_file.original_filename}>
+                        {processResult.output_file.original_filename}
+                      </span>
+                    </div>
+                  )}
+                  {!processResult && (
+                    <div className={styles.resultCard}>
+                      <BarChart3 size={20} />
+                      <span>{processedFileName}</span>
+                    </div>
+                  )}
                 </div>
+
                 <div className={styles.successActions}>
-                  <button className={styles.downloadBtn} onClick={() => toast.info('Download started...')}>
-                    <Download size={18} /> Download Excel
+                  <button
+                    className={styles.viewBtn}
+                    onClick={() => {
+                      if (processResult?.output_file?.sas_url) {
+                        window.open(processResult.output_file.sas_url, '_blank');
+                      } else {
+                        toast.info('Opening preview...');
+                      }
+                    }}
+                  >
+                    <Eye size={18} /> View File
                   </button>
-                  <button className={styles.newBtn} onClick={resetUpload}>Start New</button>
+                  <button
+                    className={styles.downloadBtn}
+                    onClick={() => {
+                      if (processResult?.output_file?.sas_url) {
+                        // For download, we often use a hidden anchor with download attribute or just open link
+                        // If sas_url is a direct blob link, we might need a specific download trigger if window.open just views it
+                        const link = document.createElement('a');
+                        link.href = processResult.output_file.sas_url;
+                        link.setAttribute('download', processResult.output_file.original_filename);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      } else {
+                        toast.info('Downloading file...');
+                      }
+                    }}
+                  >
+                    <Download size={18} /> Download File
+                  </button>
+                  <button className={styles.newBtn} onClick={resetUpload}>Upload Another File</button>
                 </div>
               </div>
             )}
@@ -293,18 +396,18 @@ const Dashboard = () => {
                 <p>{reports.length}</p>
               </div>
               <div className={styles.statCard}>
-                <span>Recently Added Reports</span>
+                <span>Recently Added Reports (Last 7 days)</span>
                 <p>{getRecentReportsCount}</p>
               </div>
             </div>
 
             <div className={styles.tableWrapper}>
               <div className={styles.tableToolbar}>
-                 <div className={styles.searchBox}>
+                <div className={styles.searchBox}>
                   <Search size={16} />
-                  <input 
-                    type="text" 
-                    placeholder="Search reports..." 
+                  <input
+                    type="text"
+                    placeholder="Search reports..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -332,12 +435,14 @@ const Dashboard = () => {
                     <tr key={report.id}>
                       <td className={styles.fileNameCell} data-label="File Name">
                         <div className={styles.fileIcon}>
-                          {report.fileType === 'xlsx' ? <BarChart3 size={18} /> : <FileUp size={18} />}
+                          <FileText size={18} />
                         </div>
-                        <span title={report.fileName}>{report.fileName}</span>
+                        <span title={report.output_file?.original_filename || 'Unknown'}>
+                          {report.output_file?.original_filename || 'Unknown'}
+                        </span>
                       </td>
                       <td className={styles.dateCell} data-label="Created At">
-                        {new Date(report.createdAt).toLocaleDateString(undefined, {
+                        {new Date(report.created_at).toLocaleDateString(undefined, {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric'
@@ -345,11 +450,32 @@ const Dashboard = () => {
                       </td>
                       <td data-label="Actions">
                         <div className={styles.actionGroup}>
-                          <button className={styles.actionBtn} title="View">
-                            <Plus size={16} />
+                          <button
+                            className={styles.actionBtn}
+                            title="View"
+                            onClick={() => {
+                              if (report.output_file?.sas_url) {
+                                window.open(report.output_file.sas_url, '_blank');
+                              }
+                            }}
+                          >
+                            <Eye size={16} />
                             <span>View</span>
                           </button>
-                          <button className={styles.actionBtn} title="Download">
+                          <button
+                            className={styles.actionBtn}
+                            title="Download"
+                            onClick={() => {
+                              if (report.output_file?.sas_url) {
+                                const link = document.createElement('a');
+                                link.href = report.output_file.sas_url;
+                                link.setAttribute('download', report.output_file.original_filename);
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              }
+                            }}
+                          >
                             <Download size={16} />
                             <span>Download</span>
                           </button>
@@ -364,26 +490,26 @@ const Dashboard = () => {
                 </tbody>
               </table>
 
-              {totalPages > 1 && (
+              {totalPages >= 1 && reports.length > 0 && (
                 <div className={styles.pagination}>
-                  <button 
-                    className={styles.pageBtn} 
+                  <button
+                    className={styles.pageBtn}
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   >
                     <ChevronLeft size={16} />
                   </button>
                   {[...Array(totalPages)].map((_, i) => (
-                    <button 
-                      key={i} 
+                    <button
+                      key={i}
                       className={`${styles.pageBtn} ${currentPage === i + 1 ? styles.activePage : ''}`}
                       onClick={() => setCurrentPage(i + 1)}
                     >
                       {i + 1}
                     </button>
                   ))}
-                  <button 
-                    className={styles.pageBtn} 
+                  <button
+                    className={styles.pageBtn}
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   >

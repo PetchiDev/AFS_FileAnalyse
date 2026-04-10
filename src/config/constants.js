@@ -1,5 +1,5 @@
 export const API = {
-  BASE_URL: (import.meta.env.VITE_API_BASE_URL || 'https://afsattorneysearch-api-bqfgdfb7fhgrgbgj.eastus2-01.azurewebsites.net').replace(/\/$/, ''),
+  BASE_URL: (import.meta.env.VITE_API_BASE_URL || 'https://purchase-schedule-formfill-api-eehdh2d0ahavbhf9.eastus2-01.azurewebsites.net').replace(/\/$/, ''),
   ENDPOINTS: {
     // File Processing
     UPLOAD_FILE: '/api/v1/files/upload',
@@ -7,7 +7,9 @@ export const API = {
     FILE_DOWNLOAD: '/api/v1/files/download',
     // Reports
     REPORTS_LIST: '/api/v1/reports',
-    REPORT_DOWNLOAD: '/api/v1/reports/download'
+    REPORT_DOWNLOAD: '/api/v1/reports/download',
+    PROCESS_FILES: '/api/v1/process',
+    PROCESSINGS: '/api/v1/processings'
   }
 };
 
@@ -68,8 +70,8 @@ export const FILE_UPLOAD = {
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   ],
-  ALLOWED_EXTENSIONS: ['.pdf', '.doc', '.docx', '.xls', '.xlsx'],
-  FORMAT_LABELS: ['PDF', 'DOCX', 'XLSX'],
+  ALLOWED_EXTENSIONS: ['.pdf', '.docx', '.doc', '.msg'],
+  FORMAT_LABELS: ['PDF', 'DOCX', 'DOC', 'MSG'],
   UPLOAD_TITLE: 'Upload Files',
   UPLOAD_SUBTITLE: 'Select one or more files to begin processing',
   DRAG_TEXT: 'Drag files here or click to browse',
@@ -104,7 +106,7 @@ export const MESSAGES = {
     GENERIC: 'Something went wrong!',
     NETWORK: 'Network error. Please try again.',
     UNAUTHORIZED: 'You are not authorized.',
-    INVALID_FILE: 'Invalid file format. Please upload PDF, DOCX, or XLSX files.',
+    INVALID_FILE: 'Please upload a file in supported format (.docx, .doc, .pdf, .msg)',
     FILE_TOO_LARGE: 'File size exceeds the maximum limit of 10MB.',
     PROCESSING_FAILED: 'File processing failed. Please try again.'
   }
