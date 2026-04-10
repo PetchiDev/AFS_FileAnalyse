@@ -283,7 +283,18 @@ const Dashboard = () => {
     try {
       await analysisService.deleteProcessing(reportToDelete.id, objectId);
       toast.success('Report deleted successfully');
-      loadHistory(currentPage);
+      
+      // Calculate updated pagination state
+      const newTotalRecords = Math.max(0, reportsPagination.totalRecords - 1);
+      const newTotalPages = Math.ceil(newTotalRecords / ITEMS_PER_PAGE) || 1;
+      
+      // If current page is now beyond new total pages, move back
+      if (currentPage > newTotalPages) {
+        setCurrentPage(newTotalPages);
+      } else {
+        // Force refresh data for current page from /api/v1/processings
+        loadHistory(currentPage);
+      }
     } catch (err) {
       console.error(err);
       toast.error(err.message || 'Failed to delete report');

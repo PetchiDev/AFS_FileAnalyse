@@ -104,8 +104,12 @@
 }
 
 .itemName {
+    display: block;
+    margin: 8px 0;
     font-weight: 700;
     color: var(--color-text-primary);
+    word-break: break-all;
+    white-space: normal;
 }
 
 .footer {
