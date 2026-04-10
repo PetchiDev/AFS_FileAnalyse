@@ -12,7 +12,10 @@ import {
   Calendar,
   ExternalLink,
   Download,
-  Info
+  Info,
+  Hash,
+  FileCheck,
+  Globe
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import analysisService from '@/services/analysis.service';
@@ -66,13 +69,20 @@ const ProcessingDetail = () => {
   return (
     <div className={styles.detailWrapper}>
       <header className={styles.header}>
-        <button onClick={() => navigate({ to: '/' })} className={styles.iconBtn}>
-          <ArrowLeft size={20} />
-        </button>
-        <div className={styles.headerTitle}>
-          <h1>Analysis Results</h1>
+        <div className={styles.headerLeft}>
+          <button onClick={() => navigate({ to: '/' })} className={styles.backBtn}>
+            <ArrowLeft size={18} />
+            <span>Back to Dashboard</span>
+          </button>
+          <div className={styles.titleArea}>
+            <h1>Analysis Results</h1>
+            <div className={styles.statusIndicator}>
+              <div className={`${styles.statusDot} ${styles[status?.toLowerCase()]}`} />
+              <span>{status}</span>
+            </div>
+          </div>
         </div>
-        <div className={styles.headerActions}>
+        <div className={styles.headerRight}>
           {output_file?.sas_url && (
             <button
               className={styles.downloadBtn}
@@ -82,145 +92,164 @@ const ProcessingDetail = () => {
                 window.open(getSafeViewerUrl(output_file.sas_url), '_blank');
               }}
             >
-              <Download size={18} /> Download Result
+              <Download size={18} />
+              <span>Download Report</span>
             </button>
           )}
         </div>
       </header>
 
-      <main className={styles.grid}>
-        {/* Summary Card */}
-        <section className={`${styles.card} ${styles.summaryCard}`}>
-          <div className={styles.cardHeader}>
-            <ShieldCheck className={styles.icon} />
-            <h2>General Information</h2>
-          </div>
-          <div className={styles.infoGrid}>
-            <div className={styles.infoItem}>
-              <label>Status</label>
-              <span className={styles.statusBadge}>{status}</span>
+      <main className={styles.layoutContainer}>
+        <div className={styles.mainContent}>
+          {/* Company Identity */}
+          <section className={styles.glassCard}>
+            <div className={styles.cardHeader}>
+              <div className={styles.iconBg}>
+                <Building2 size={20} />
+              </div>
+              <h2>Company Identity</h2>
             </div>
-            <div className={styles.infoItem}>
-              <label>Created At</label>
-              <div className={styles.withIcon}>
+            <div className={styles.cardBody}>
+              <div className={styles.dataGroup}>
+                <label>Legal Name</label>
+                <div className={styles.legalNameHighlight}>
+                  {extracted_data?.company_name || 'N/A'}
+                </div>
+              </div>
+              <div className={styles.dataGrid}>
+                <div className={styles.dataGroup}>
+                  <label><MapPin size={14} /> Registered Address</label>
+                  <p className={styles.addressValue}>{extracted_data?.company_address || 'N/A'}</p>
+                </div>
+                <div className={styles.dataGroup}>
+                  <label><Hash size={14} /> Tax Identification</label>
+                  <p className={styles.taxId}>{extracted_data?.tax_id || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Financial Details */}
+          <section className={styles.glassCard}>
+            <div className={styles.cardHeader}>
+              <div className={styles.iconBg}>
+                <Banknote size={20} />
+              </div>
+              <h2>Financial Details</h2>
+            </div>
+            <div className={styles.cardBody}>
+              <div className={styles.primeStatsGrid}>
+                <div className={styles.primeStatBadge}>
+                  <label>Principal Amount</label>
+                  <div className={styles.amountText}>{extracted_data?.principal_amount || 'N/A'}</div>
+                </div>
+                <div className={styles.primeStatBadge}>
+                  <label>Series Designation</label>
+                  <div className={styles.seriesText}>{extracted_data?.series || 'N/A'}</div>
+                </div>
+              </div>
+              <div className={styles.dataGrid}>
+                <div className={styles.dataGroup}>
+                  <label>Security Description</label>
+                  <p className={styles.descriptionText}>{extracted_data?.security_description || 'N/A'}</p>
+                </div>
+                <div className={styles.dataGroup}>
+                  <label>CUSIP / PPN Number</label>
+                  <p className={styles.cusipText}>{extracted_data?.cusip_ppn || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Wire Transfer Instructions */}
+          <section className={styles.glassCard}>
+            <div className={styles.cardHeader}>
+              <div className={styles.iconBg}>
+                <CreditCard size={20} />
+              </div>
+              <h2>Wire Transfer Instructions</h2>
+            </div>
+            <div className={styles.cardBody}>
+              <div className={styles.wireInstructionGrid}>
+                <div className={styles.dataGroup}>
+                  <label>Receiving Bank</label>
+                  <p className={styles.bankName}>{extracted_data?.wire_transfer?.bank_name || 'N/A'}</p>
+                </div>
+                <div className={styles.dataGroup}>
+                  <label>ABA Routing Number</label>
+                  <p className={styles.abaNumber}>{extracted_data?.wire_transfer?.aba_number || 'N/A'}</p>
+                </div>
+                <div className={styles.dataGroup}>
+                  <label>Account Identifier</label>
+                  <p className={styles.accNumber}>{extracted_data?.wire_transfer?.account_number || 'N/A'}</p>
+                </div>
+                <div className={styles.dataGroup}>
+                  <label>Reference Information</label>
+                  <p className={styles.refInfo}>{extracted_data?.wire_transfer?.reference_info || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside className={styles.sideRail}>
+          {/* General Metadata */}
+          <section className={styles.sideCard}>
+            <div className={styles.cardHeader}>
+              <div className={styles.iconBg}>
+                <FileCheck size={18} />
+              </div>
+              <h3>Document Metadata</h3>
+            </div>
+            <div className={styles.metaList}>
+              <div className={styles.metaItem}>
                 <Calendar size={14} />
-                <span>{new Date(created_at).toLocaleDateString(undefined, {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })}</span>
+                <div className={styles.metaText}>
+                  <label>Analyzed On</label>
+                  <span>{new Date(created_at).toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}</span>
+                </div>
+              </div>
+              <div className={styles.metaItem}>
+                <FileText size={14} />
+                <div className={styles.metaText}>
+                  <label>Source Filename</label>
+                  <span title={output_file?.original_filename}>{output_file?.original_filename}</span>
+                </div>
               </div>
             </div>
-            <div className={styles.infoItem}>
-              <label>Filename</label>
-              <span>{output_file?.original_filename}</span>
-            </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Company Identity */}
-        <section className={styles.card}>
-          <div className={styles.cardHeader}>
-            <Building2 className={styles.icon} />
-            <h2>Company Identity</h2>
-          </div>
-          <div className={styles.fieldGroup}>
-            <label>Legal Name</label>
-            <p className={styles.mainValue}>{extracted_data?.company_name || 'N/A'}</p>
-          </div>
-          <div className={styles.fieldGroup}>
-            <label>Address</label>
-            <div className={styles.withIcon}>
-              <MapPin size={16} />
-              <p>{extracted_data?.company_address || 'N/A'}</p>
+          {/* Communications */}
+          <section className={styles.sideCard}>
+            <div className={styles.cardHeader}>
+              <div className={styles.iconBg}>
+                <Globe size={18} />
+              </div>
+              <h3>Delivery & Comm.</h3>
             </div>
-          </div>
-          <div className={styles.fieldGroup}>
-            <label>Tax ID</label>
-            <p>{extracted_data?.tax_id || 'N/A'}</p>
-          </div>
-        </section>
-
-        {/* Financial Details */}
-        <section className={styles.card}>
-          <div className={styles.cardHeader}>
-            <Banknote className={styles.icon} />
-            <h2>Financial Details</h2>
-          </div>
-          <div className={styles.statsGrid}>
-            <div className={styles.statBox}>
-              <label>Principal Amount</label>
-              <p className={styles.statValue}>{extracted_data?.principal_amount || 'N/A'}</p>
-            </div>
-            <div className={styles.statBox}>
-              <label>Series</label>
-              <p className={styles.statValue}>{extracted_data?.series || 'N/A'}</p>
-            </div>
-          </div>
-          <div className={styles.fieldGroup}>
-            <label>Security Description</label>
-            <p>{extracted_data?.security_description || 'N/A'}</p>
-          </div>
-          <div className={styles.fieldGroup}>
-            <label>CUSIP / PPN</label>
-            <p>{extracted_data?.cusip_ppn || 'N/A'}</p>
-          </div>
-        </section>
-
-        {/* Wire Transfer Instructions */}
-        <section className={`${styles.card} ${styles.fullWidth}`}>
-          <div className={styles.cardHeader}>
-            <CreditCard className={styles.icon} />
-            <h2>Wire Transfer Instructions</h2>
-          </div>
-          <div className={styles.wireGrid}>
-            <div className={styles.fieldGroup}>
-              <label>Bank Name</label>
-              <p>{extracted_data?.wire_transfer?.bank_name || 'N/A'}</p>
-            </div>
-            <div className={styles.fieldGroup}>
-              <label>ABA Number</label>
-              <p>{extracted_data?.wire_transfer?.aba_number || 'N/A'}</p>
-            </div>
-            <div className={styles.fieldGroup}>
-              <label>Account Number</label>
-              <p>{extracted_data?.wire_transfer?.account_number || 'N/A'}</p>
-            </div>
-            <div className={styles.fieldGroup}>
-              <label>Reference Info</label>
-              <p>{extracted_data?.wire_transfer?.reference_info || 'N/A'}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Communication & Delivery */}
-        <section className={`${styles.card} ${styles.fullWidth}`}>
-          <div className={styles.cardHeader}>
-            <Mail className={styles.icon} />
-            <h2>Communications & Delivery</h2>
-          </div>
-          <div className={styles.commGrid}>
-            <div className={styles.fieldGroup}>
-              <label>Payment Notices Address</label>
-              <p>{extracted_data?.payment_notices_address || 'N/A'}</p>
-            </div>
-            <div className={styles.fieldGroup}>
-              <label>Delivery Instructions</label>
-              <p>{extracted_data?.delivery_instructions || 'N/A'}</p>
-            </div>
-            <div className={styles.fieldGroup}>
-              <label>Electronic Delivery Email</label>
-              <div className={styles.withIcon}>
-                <Mail size={16} />
-                <p>{extracted_data?.email_electronic_delivery || 'N/A'}</p>
+            <div className={styles.commStack}>
+              <div className={styles.dataGroup}>
+                <label>Electronic Delivery</label>
+                <div className={styles.emailBadge}>
+                  <Mail size={12} />
+                  <span>{extracted_data?.email_electronic_delivery || 'N/A'}</span>
+                </div>
+              </div>
+              <div className={styles.dataGroup}>
+                <label>Notices Address</label>
+                <p className={styles.smallAddress}>{extracted_data?.payment_notices_address || 'N/A'}</p>
+              </div>
+              <div className={styles.dataGroup}>
+                <label>Delivery Instructions</label>
+                <p className={styles.smallAddress}>{extracted_data?.delivery_instructions || 'N/A'}</p>
               </div>
             </div>
-            <div className={styles.fieldGroup}>
-              <label>Other Communications</label>
-              <p>{extracted_data?.other_communications_address || 'N/A'}</p>
-            </div>
-          </div>
-        </section>
+          </section>
+        </aside>
       </main>
     </div>
   );

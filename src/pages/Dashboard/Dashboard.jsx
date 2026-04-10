@@ -381,7 +381,7 @@ const Dashboard = () => {
                     style={{ display: 'none' }}
                     accept={FILE_UPLOAD.ALLOWED_EXTENSIONS.join(',')}
                   />
-                  
+
                   <div className={styles.dropzoneContent}>
                     <div className={styles.iconWrapper}>
                       <CloudUpload size={48} strokeWidth={1.5} />
@@ -451,7 +451,7 @@ const Dashboard = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className={styles.enhancedLoader}>
                   <img src={AFS_favicon} alt="AFS Loader" className={styles.faviconGif} />
                   <div className={styles.messageWindow}>
@@ -469,24 +469,24 @@ const Dashboard = () => {
                 <h3>Processing Complete!</h3>
                 <p>Your file has been successfully processed and is ready for download.</p>
 
-                  {processResult?.output_file && (
-                    <div className={styles.previewWrapper}>
-                      <div className={styles.previewContainer}>
-                        <iframe 
-                          src={getSafeViewerUrl(processResult.output_file.sas_url)} 
-                          className={styles.previewIframe}
-                          frameBorder="0"
-                        />
-                      </div>
-                      <button 
-                        className={styles.fullViewBtn}
-                        onClick={(e) => handleDownload(e, processResult.output_file.sas_url)}
-                      >
-                        <ExternalLink size={16} />
-                        <span>Click to open full version</span>
-                      </button>
+                {processResult?.output_file && (
+                  <div className={styles.previewWrapper}>
+                    <div className={styles.previewContainer}>
+                      <iframe
+                        src={getSafeViewerUrl(processResult.output_file.sas_url)}
+                        className={styles.previewIframe}
+                        frameBorder="0"
+                      />
                     </div>
-                  )}
+                    <button
+                      className={styles.fullViewBtn}
+                      onClick={(e) => handleDownload(e, processResult.output_file.sas_url)}
+                    >
+                      <ExternalLink size={16} />
+                      <span>Click to open full version</span>
+                    </button>
+                  </div>
+                )}
 
                 <div className={styles.successActions}>
                   <button
@@ -515,7 +515,7 @@ const Dashboard = () => {
             </div>
 
             <div className={styles.tableWrapper}>
-              <div className={styles.tableToolbar}>
+              {/* <div className={styles.tableToolbar}>
                 <div className={styles.searchBox}>
                   <Search size={16} />
                   <input
@@ -525,7 +525,7 @@ const Dashboard = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-              </div>
+              </div> */}
 
               <table className={styles.reportsTable}>
                 <thead>
@@ -590,8 +590,8 @@ const Dashboard = () => {
                               <Download size={16} />
                               <span>Download</span>
                             </button>
-                            <button 
-                              className={`${styles.actionBtn} ${styles.deleteBtn}`} 
+                            <button
+                              className={`${styles.actionBtn} ${styles.deleteBtn}`}
                               title="Delete"
                               onClick={() => handleDeleteClick(report)}
                             >

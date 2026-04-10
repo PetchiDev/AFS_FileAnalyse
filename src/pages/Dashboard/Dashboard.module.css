@@ -303,9 +303,8 @@
   font-size: 14px;
   font-weight: 700;
   color: var(--color-text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-all;
+  white-space: normal;
 }
 
 .fileCardSize {
@@ -446,6 +445,21 @@
   border-radius: 20px;
   border: 1px solid var(--color-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
 }
 
 .tableToolbar {
@@ -469,7 +483,7 @@
 
 .reportsTable th {
   background: var(--color-bg-secondary);
-  padding: 16px 24px;
+  padding: 16px;
   font-size: 13px;
   font-weight: 700;
   color: var(--color-text-secondary);
@@ -495,7 +509,7 @@
 }
 
 .reportsTable td {
-  padding: 16px 24px;
+  padding: 16px;
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
 }
@@ -514,7 +528,7 @@
   gap: 16px;
   font-weight: 600;
   color: var(--color-text-primary);
-  min-width: 250px;
+  min-width: 200px;
 }
 
 .fileIcon {
@@ -547,8 +561,11 @@
 .actionBtn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 8px;
+  min-width: 36px;
+  height: 36px;
   border-radius: 8px;
   border: 1px solid var(--color-border);
   background: var(--color-bg-primary);
@@ -557,6 +574,19 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.actionBtn span {
+  display: inline-block;
+}
+
+@media (max-width: 1200px) {
+  .actionBtn {
+    padding: 8px;
+  }
+  .actionBtn span {
+    display: none;
+  }
 }
 
 .actionBtn:hover {
