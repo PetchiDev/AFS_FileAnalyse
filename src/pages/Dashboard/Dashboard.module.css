@@ -123,89 +123,256 @@
   color: var(--color-text-secondary);
 }
 
-/* Upload Styles */
-.uploadMain {
+/* Upload Styles Redesign */
+.uploadSection {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .dropzone {
+  position: relative;
   border: 2px dashed var(--color-border);
-  border-radius: 20px;
-  padding: 60px;
+  border-radius: 30px;
+  padding: 60px 40px;
   text-align: center;
   cursor: pointer;
   background: var(--color-bg-secondary);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  min-height: 280px;
 }
 
 .dropzone:hover {
   border-color: var(--color-primary);
-  background: rgba(238, 32, 46, 0.02);
+  background: rgba(238, 32, 46, 0.03);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .dragging {
   border-color: var(--color-primary);
+  background: rgba(238, 32, 46, 0.08);
   transform: scale(0.99);
+}
+
+.iconWrapper {
+  width: 80px;
+  height: 80px;
+  background: var(--color-bg-primary);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  margin-bottom: 24px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.dropzone:hover .iconWrapper {
+  transform: scale(1.1) rotate(5deg);
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 12px 24px rgba(238, 32, 46, 0.2);
+}
+
+.dropzoneText h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.dropzoneText p {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+}
+
+.browseText {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.supportedFormats {
+  margin-top: 24px;
+  padding: 8px 16px;
+  background: var(--color-bg-primary);
+  border-radius: 100px;
+  border: 1px solid var(--color-border);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* File List Styles */
+.fileListWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fileListHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.fileListHeader span {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.clearAllBtn {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.clearAllBtn:hover {
   background: rgba(238, 32, 46, 0.05);
 }
 
-.plusIcon {
-  color: var(--color-primary);
-  opacity: 0.6;
-}
-
-.fileList {
+.fileGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
-.fileItem {
+.fileCard {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  padding: 16px 20px;
   background: var(--color-bg-secondary);
-  padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: 20px;
   border: 1px solid var(--color-border);
-  font-size: 13px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
-.fileName {
+.fileCard:hover {
+  background: var(--color-bg-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.fileCardIcon {
+  width: 44px;
+  height: 44px;
+  background: var(--color-bg-primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.fileCardInfo {
   flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fileCardName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.mainBtn {
-  background: var(--color-primary);
-  color: white;
+.fileCardSize {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.removeCardBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  background: transparent;
   border: none;
-  padding: 16px 32px;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+}
+
+.removeCardBtn:hover {
+  background: rgba(238, 32, 46, 0.1);
+  color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+/* Action Styles */
+.uploadActions {
+  display: flex;
+  justify-content: center;
   margin-top: 16px;
 }
 
-.mainBtn:hover:not(:disabled) {
-  background: var(--color-primary-dark);
-  box-shadow: 0 8px 16px rgba(238, 32, 46, 0.2);
-  transform: translateY(-2px);
+.processBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 48px;
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: not-allowed;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: auto;
+  min-width: 240px;
 }
 
-.mainBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.activeProcessBtn {
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(238, 32, 46, 0.2);
+}
+
+.activeProcessBtn:hover {
+  transform: translateY(-3px) scale(1.02);
+  background: var(--color-primary-dark);
+  box-shadow: 0 15px 30px rgba(238, 32, 46, 0.3);
+}
+
+.activeProcessBtn:active {
+  transform: translateY(0) scale(0.98);
 }
 
 /* Reports Styles */

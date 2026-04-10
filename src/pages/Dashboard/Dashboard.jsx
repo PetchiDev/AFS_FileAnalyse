@@ -18,7 +18,11 @@ import {
   ChevronRight,
   FileText,
   Eye,
-  ExternalLink
+  ExternalLink,
+  CloudUpload,
+  Zap,
+  X,
+  FileCheck
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
 import analysisService from '@/services/analysis.service';
@@ -361,7 +365,7 @@ const Dashboard = () => {
             </div>
 
             {!isProcessing && !isComplete ? (
-              <div className={styles.uploadMain}>
+              <div className={styles.uploadSection}>
                 <div
                   className={`${styles.dropzone} ${isDragging ? styles.dragging : ''}`}
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -369,36 +373,70 @@ const Dashboard = () => {
                   onDrop={(e) => { e.preventDefault(); validateAndAddFiles(Array.from(e.dataTransfer.files)); setIsDragging(false); }}
                   onClick={() => fileInputRef.current.click()}
                 >
-                  <input type="file" hidden ref={fileInputRef} multiple onChange={handleFileSelect} />
-                  <Plus size={40} className={styles.plusIcon} />
-                  <p>Drop files here or click to browse</p>
-                  <span>Supported: (.docx) (.doc) (.pdf) (.msg)</span>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    multiple
+                    style={{ display: 'none' }}
+                    accept={FILE_UPLOAD.ALLOWED_EXTENSIONS.join(',')}
+                  />
+                  
+                  <div className={styles.dropzoneContent}>
+                    <div className={styles.iconWrapper}>
+                      <CloudUpload size={48} strokeWidth={1.5} />
+                    </div>
+                    <div className={styles.dropzoneText}>
+                      <h3>Drag & Drop files here</h3>
+                      <p>or <span className={styles.browseText}>browse your computer</span></p>
+                    </div>
+                    <div className={styles.supportedFormats}>
+                      <span>{FILE_UPLOAD.ALLOWED_EXTENSIONS.join(', ')}</span>
+                    </div>
+                  </div>
                 </div>
 
                 {files.length > 0 && (
-                  <div className={styles.fileList}>
-                    {files.map((f, i) => (
-                      <div key={i} className={styles.fileItem}>
-                        <FileUp size={16} />
-                        <span className={styles.fileName}>{f.name}</span>
-                        <button
-                          className={styles.removeFileBtn}
-                          onClick={(e) => { e.stopPropagation(); setFiles(files.filter((_, idx) => idx !== i)); }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    ))}
+                  <div className={styles.fileListWrapper}>
+                    <div className={styles.fileListHeader}>
+                      <span>Selected Files ({files.length})</span>
+                      <button onClick={() => setFiles([])} className={styles.clearAllBtn}>Clear All</button>
+                    </div>
+                    <div className={styles.fileGrid}>
+                      {files.map((file, index) => (
+                        <div key={`${file.name}-${index}`} className={styles.fileCard}>
+                          <div className={styles.fileCardIcon}>
+                            <FileText size={20} />
+                          </div>
+                          <div className={styles.fileCardInfo}>
+                            <span className={styles.fileCardName} title={file.name}>{file.name}</span>
+                            <span className={styles.fileCardSize}>{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                          </div>
+                          <button
+                            className={styles.removeCardBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFiles(files.filter((_, i) => i !== index));
+                            }}
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
-                <button
-                  className={styles.mainBtn}
-                  disabled={files.length === 0}
-                  onClick={startProcessing}
-                >
-                  Process Files
-                </button>
+                <div className={styles.uploadActions}>
+                  <button
+                    className={`${styles.processBtn} ${files.length > 0 ? styles.activeProcessBtn : ''}`}
+                    disabled={files.length === 0}
+                    onClick={startProcessing}
+                  >
+                    <Zap size={18} fill="currentColor" />
+                    <span>Process Files</span>
+                  </button>
+                </div>
               </div>
             ) : isProcessing ? (
               <div className={styles.processingSection}>
