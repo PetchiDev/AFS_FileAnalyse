@@ -137,18 +137,18 @@ const Dashboard = () => {
 
   const handleDownload = async (url, fileName) => {
     if (!url) return;
-    
+
     try {
       toast.info('Downloading file...');
       const response = await fetch(url);
       const blob = await response.blob();
       const objectUrl = URL.createObjectURL(blob);
-      
+
       const link = document.body.appendChild(document.createElement('a'));
       link.href = objectUrl;
       link.download = fileName || 'download';
       link.click();
-      
+
       // Cleanup
       setTimeout(() => {
         URL.revokeObjectURL(objectUrl);
@@ -266,7 +266,7 @@ const Dashboard = () => {
     if (sortConfig.key !== column) return null;
     return (
       <span className={styles.sortType}>
-        {column === 'fileName' 
+        {column === 'fileName'
           ? (sortConfig.direction === 'asc' ? ' (A-Z)' : ' (Z-A)')
           : (sortConfig.direction === 'asc' ? ' (Oldest)' : ' (Newest)')
         }
@@ -402,8 +402,8 @@ const Dashboard = () => {
                   >
                     <Eye size={18} /> View File
                   </button>
-                  <button 
-                    className={styles.downloadBtn} 
+                  <button
+                    className={styles.downloadBtn}
                     onClick={() => handleDownload(processResult?.output_file?.sas_url, processResult?.output_file?.original_filename)}
                   >
                     <Download size={18} /> Download File
@@ -479,17 +479,17 @@ const Dashboard = () => {
                             className={styles.actionBtn}
                             title="View"
                             onClick={() => {
-                              navigate({ 
-                                to: '/processings/$id', 
-                                params: { id: report.processing_id || report.id } 
+                              navigate({
+                                to: '/processings/$id',
+                                params: { id: report.processing_id || report.id }
                               });
                             }}
                           >
                             <Eye size={16} />
                             <span>View</span>
                           </button>
-                          <button 
-                            className={styles.actionBtn} 
+                          <button
+                            className={styles.actionBtn}
                             title="Download"
                             onClick={() => handleDownload(report.output_file?.sas_url, report.output_file?.original_filename)}
                           >
