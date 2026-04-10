@@ -30,7 +30,23 @@ import {
 } from '@/config/constants';
 import DeleteConfirmationModal from '@/components/common/DeleteConfirmationModal/DeleteConfirmationModal';
 import { getSafeViewerUrl } from '@/utils/fileUtils';
+import AFS_favicon from '@/assets/images/AFS_favicon.gif';
 import styles from './Dashboard.module.css';
+
+const PROCESSING_MESSAGES = [
+  "Data extraction in progress...",
+  "AI is analyzing your documents...",
+  "Identifying key data points and metrics...",
+  "Accurately mapping data to the template...",
+  "Performing deep structural analysis...",
+  "Validating extracted information integrity...",
+  "Optimizing document alignment...",
+  "Running quality assurance checks...",
+  "Refining analytical outputs...",
+  "Securing your analytical results...",
+  "Preparing final report preview...",
+  "Finalizing processing steps..."
+];
 
 const Dashboard = () => {
   const {
@@ -60,7 +76,32 @@ const Dashboard = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reportToDelete, setReportToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const messageRef = useRef(null);
   const ITEMS_PER_PAGE = 5;
+
+  // Cycle through processing messages every 5s
+  useEffect(() => {
+    let interval;
+    if (isProcessing) {
+      interval = setInterval(() => {
+        setCurrentMessageIndex((prev) => (prev + 1) % PROCESSING_MESSAGES.length);
+      }, 5000);
+    } else {
+      setCurrentMessageIndex(0);
+    }
+    return () => clearInterval(interval);
+  }, [isProcessing]);
+
+  // Animate message change
+  useEffect(() => {
+    if (messageRef.current) {
+      gsap.fromTo(messageRef.current,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }
+      );
+    }
+  }, [currentMessageIndex]);
 
   // Entrance Animation
   useEffect(() => {
@@ -361,14 +402,28 @@ const Dashboard = () => {
               </div>
             ) : isProcessing ? (
               <div className={styles.processingSection}>
-                <h3>{PROCESSING_STEPS_LIST[currentStep]?.label || 'Preparing...'}</h3>
-                <div className={styles.progressBar}>
-                  <div
-                    className={styles.progressFill}
-                    style={{ width: `${((currentStep + 1) / PROCESSING_STEPS_LIST.length) * 100}%` }}
-                  />
+                <div className={styles.loadingHeader}>
+                  <div className={styles.processingStepTitle}>
+                    {PROCESSING_STEPS_LIST[currentStep]?.label || 'Preparing...'}
+                  </div>
+                  <div className={styles.progressBar}>
+                    <div
+                      className={styles.progressFill}
+                      style={{ width: `${((currentStep + 1) / PROCESSING_STEPS_LIST.length) * 100}%` }}
+                    />
+                  </div>
                 </div>
-                <p>AI is analyzing your documents. This may take a moment.</p>
+                
+                <div className={styles.enhancedLoader}>
+                  <img src={AFS_favicon} alt="AFS Loader" className={styles.faviconGif} />
+                  <div className={styles.messageWindow}>
+                    <div className={styles.messageTrack} ref={messageRef}>
+                      <span className={styles.processingMessage}>
+                        {PROCESSING_MESSAGES[currentMessageIndex]}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className={styles.successSection}>
