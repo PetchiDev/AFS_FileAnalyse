@@ -76,10 +76,10 @@ const ProcessingDetail = () => {
           </button>
           <div className={styles.titleArea}>
             <h1>Analysis Results</h1>
-            <div className={styles.statusIndicator}>
+            {/* <div className={styles.statusIndicator}>
               <div className={`${styles.statusDot} ${styles[status?.toLowerCase()]}`} />
               <span>{status}</span>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className={styles.headerRight}>
