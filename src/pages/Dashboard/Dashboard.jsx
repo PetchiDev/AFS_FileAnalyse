@@ -17,7 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
-  Eye
+  Eye,
+  ExternalLink
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
 import analysisService from '@/services/analysis.service';
@@ -375,37 +376,26 @@ const Dashboard = () => {
                 <h3>Processing Complete!</h3>
                 <p>Your file has been successfully processed and is ready for download.</p>
 
-                <div className={styles.resultList}>
                   {processResult?.output_file && (
-                    <div className={styles.resultCard}>
-                      <FileText size={20} />
-                      <span title={processResult.output_file.original_filename}>
-                        {processResult.output_file.original_filename}
-                      </span>
+                    <div className={styles.previewWrapper}>
+                      <div className={styles.previewContainer}>
+                        <iframe 
+                          src={getSafeViewerUrl(processResult.output_file.sas_url)} 
+                          className={styles.previewIframe}
+                          frameBorder="0"
+                        />
+                      </div>
+                      <button 
+                        className={styles.fullViewBtn}
+                        onClick={(e) => handleDownload(e, processResult.output_file.sas_url)}
+                      >
+                        <ExternalLink size={16} />
+                        <span>Click to open full version</span>
+                      </button>
                     </div>
                   )}
-                  {!processResult && (
-                    <div className={styles.resultCard}>
-                      <BarChart3 size={20} />
-                      <span>{processedFileName}</span>
-                    </div>
-                  )}
-                </div>
 
                 <div className={styles.successActions}>
-                  <button
-                    className={styles.viewBtn}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (processResult?.output_file?.sas_url) {
-                        window.open(getSafeViewerUrl(processResult.output_file.sas_url), '_blank');
-                      } else {
-                        toast.info('Opening preview...');
-                      }
-                    }}
-                  >
-                    <Eye size={18} /> View File
-                  </button>
                   <button
                     className={styles.downloadBtn}
                     onClick={(e) => handleDownload(e, processResult?.output_file?.sas_url)}
