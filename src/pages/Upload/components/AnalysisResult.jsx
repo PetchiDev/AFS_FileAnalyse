@@ -3,7 +3,6 @@ import {
   FileText, 
   Download, 
   RotateCcw, 
-  ExternalLink, 
   CheckCircle2, 
   Save,
   ChevronRight,
@@ -15,9 +14,10 @@ import {
 } from 'lucide-react';
 import { gsap } from 'gsap';
 import DocumentViewer from '@/components/common/DocumentViewer';
+import { getFileExtension } from '@/utils/fileUtils';
 import styles from './AnalysisResult.module.css';
 
-const AnalysisResult = ({ data, onReset, onDownload }) => {
+const AnalysisResult = ({ data, inputFiles = [], outputFile = null, onReset, onDownload }) => {
   const [formData, setFormData] = useState({
     purchaserName: data?.purchaserName || '',
     registeredNoteNo: data?.registeredNoteNo || '',
@@ -33,30 +33,32 @@ const AnalysisResult = ({ data, onReset, onDownload }) => {
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Static sample files from public/sample-docs
-  const sampleDocs = [
-    {
-      id: 1,
-      name: 'memo re EPR Properties 7_001.pdf',
-      size: '174 KB',
-      type: 'PDF',
-      url: '/sample-docs/memo re EPR Properties 7_001.pdf'
-    },
-    {
-      id: 2,
-      name: 'Purchaser Schedule - Americo.docx',
-      size: '17 KB',
-      type: 'DOCX',
-      url: '/sample-docs/Purchaser Schedule - Americo.docx'
-    },
-    {
-      id: 3,
-      name: 'RE EPR Properties Circle Letter.msg',
-      size: '65 KB',
-      type: 'MSG',
-      url: '/sample-docs/RE  EPR Properties Circle Letter.msg'
-    }
-  ];
+  // Build docs list from API input_files and output_file
+  const docs = [];
+  
+  // Prepend output file if available
+  if (outputFile) {
+    const ext = getFileExtension(outputFile.original_filename);
+    docs.push({
+      id: 'output-1',
+      name: outputFile.original_filename,
+      type: ext.toUpperCase(),
+      url: outputFile.sas_url,
+      isOutput: true
+    });
+  }
+
+  // Add input files
+  inputFiles.forEach((file, index) => {
+    const ext = getFileExtension(file.original_filename);
+    docs.push({
+      id: `input-${index}`,
+      name: file.original_filename,
+      type: ext.toUpperCase(),
+      url: file.sas_url,
+      isOutput: false
+    });
+  });
 
   useEffect(() => {
     gsap.fromTo('.analysis-animate', 
@@ -77,6 +79,22 @@ const AnalysisResult = ({ data, onReset, onDownload }) => {
       setIsSaving(false);
       // In a real app, we'd trigger a toast here
     }, 1000);
+  };
+
+  const getFileIconComponent = (type) => {
+    const normalizedType = type.toLowerCase();
+    if (normalizedType === 'pdf') return <FileText size={24} />;
+    if (normalizedType === 'docx' || normalizedType === 'doc') return <FileCode size={24} />;
+    if (normalizedType === 'msg') return <Mail size={24} />;
+    return <FileText size={24} />;
+  };
+
+  const getFileIconBgClass = (type) => {
+    const normalizedType = type.toLowerCase();
+    if (normalizedType === 'pdf') return styles.pdfbg;
+    if (normalizedType === 'docx' || normalizedType === 'doc') return styles.docxbg;
+    if (normalizedType === 'msg') return styles.msgbg;
+    return '';
   };
 
   return (
@@ -243,7 +261,7 @@ const AnalysisResult = ({ data, onReset, onDownload }) => {
         ) : (
           <>
             <div className={styles.paneHeader}>
-              <h2 className={styles.paneTitle}>Source Documents</h2>
+              <h2 className={styles.paneTitle}>Associated Files</h2>
               <div className={styles.headerActions}>
                 <button className={styles.downloadBtn} onClick={onDownload}>
                   <Download size={16} /> Download All
@@ -255,22 +273,32 @@ const AnalysisResult = ({ data, onReset, onDownload }) => {
             </div>
 
             <div className={styles.fileGallery}>
-              {sampleDocs.map(file => (
-                <div 
-                  key={file.id} 
-                  className={styles.fileCard}
-                  onClick={() => setSelectedDoc(file)}
-                >
-                  <div className={`${styles.fileIconBox} ${styles[file.type.toLowerCase() + 'bg']}`}>
-                    {file.type === 'PDF' ? <FileText size={24} /> : file.type === 'DOCX' ? <FileCode size={24} /> : <Mail size={24} />}
+              {docs.length > 0 ? (
+                docs.map(file => (
+                  <div 
+                    key={file.id} 
+                    className={styles.fileCard}
+                    onClick={() => setSelectedDoc(file)}
+                  >
+                    <div className={`${styles.fileIconBox} ${getFileIconBgClass(file.type)}`}>
+                      {getFileIconComponent(file.type)}
+                    </div>
+                    <div className={styles.fileCardContent}>
+                      <div className={styles.fileCardHeader}>
+                        <span className={styles.fileCardName}>{file.name}</span>
+                        {file.isOutput && <span className={styles.outputBadge}>Generated</span>}
+                      </div>
+                      <span className={styles.fileCardMeta}>{file.type}</span>
+                    </div>
+                    <ChevronRight className={styles.fileCardArrow} size={18} />
                   </div>
-                  <div className={styles.fileCardContent}>
-                    <span className={styles.fileCardName}>{file.name}</span>
-                    <span className={styles.fileCardMeta}>{file.type} • {file.size}</span>
-                  </div>
-                  <ChevronRight className={styles.fileCardArrow} size={18} />
+                ))
+              ) : (
+                <div className={styles.emptyDocs}>
+                  <FileText size={40} strokeWidth={1.2} />
+                  <p>No source documents available</p>
                 </div>
-              ))}
+              )}
             </div>
           </>
         )}

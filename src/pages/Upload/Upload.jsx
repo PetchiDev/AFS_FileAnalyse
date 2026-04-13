@@ -7,6 +7,7 @@ import {
   PROCESSING_STEPS_LIST,
   MESSAGES
 } from '@/config/constants';
+import { analysisService } from '@/services/analysis.service';
 import AnalysisResult from './components/AnalysisResult';
 import styles from './Upload.module.css';
 
@@ -21,6 +22,7 @@ const Upload = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [processedFileName, setProcessedFileName] = useState('');
   const [error, setError] = useState(null);
+  const [apiResponse, setApiResponse] = useState(null);
 
   const fileInputRef = useRef(null);
   const heroRef = useRef(null);
@@ -36,6 +38,7 @@ const Upload = () => {
     setCurrentStep(-1);
     setProcessedFileName('');
     setError(null);
+    setApiResponse(null);
   }, []);
 
   // Reset all state when navigating to this page via sidebar (custom event)
@@ -224,7 +227,7 @@ const Upload = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const simulateProcessing = useCallback(() => {
+  const handleProcessFiles = useCallback(async () => {
     if (files.length === 0) {
       toast.error('Please select at least one file to process.');
       return;
@@ -235,58 +238,85 @@ const Upload = () => {
     setError(null);
     setCurrentStep(0);
 
-    const stepDurations = [1500, 2500, 2000, 1000];
+    // Build FormData
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('files', file);
+    });
+    // Use a default object_id – in production this comes from auth context
+    formData.append('object_id', 'dev-user-001');
 
+    // Animate steps while waiting for API
+    const stepTimers = [];
+    const stepDurations = [1500, 2500, 2000];
     let stepIndex = 0;
+
     const advanceStep = () => {
       if (stepIndex < PROCESSING_STEPS_LIST.length - 1) {
         stepIndex++;
         setCurrentStep(stepIndex);
-        setTimeout(advanceStep, stepDurations[stepIndex]);
-      } else {
-        // Processing complete
-        setTimeout(() => {
-          setIsProcessing(false);
-          setIsComplete(true);
-          setProcessedFileName(
-            files.length === 1
-              ? files[0].name.replace(/\.[^/.]+$/, '') + '_processed.xlsx'
-              : `batch_${files.length}_files_processed.xlsx`
-          );
-          toast.success(MESSAGES.SUCCESS.PROCESSING);
-        }, 800);
+        if (stepIndex < stepDurations.length) {
+          stepTimers.push(setTimeout(advanceStep, stepDurations[stepIndex]));
+        }
       }
     };
+    stepTimers.push(setTimeout(advanceStep, stepDurations[0]));
 
-    setTimeout(advanceStep, stepDurations[0]);
+    try {
+      const response = await analysisService.processFiles(formData);
+      
+      // Clear any pending step timers
+      stepTimers.forEach(clearTimeout);
+
+      // Jump to final step
+      setCurrentStep(PROCESSING_STEPS_LIST.length - 1);
+
+      // Small delay for visual completion
+      setTimeout(() => {
+        setApiResponse(response);
+        setIsProcessing(false);
+        setIsComplete(true);
+        setProcessedFileName(
+          response?.output_file?.original_filename || 
+          (files.length === 1
+            ? files[0].name.replace(/\.[^/.]+$/, '') + '_processed.xlsx'
+            : `batch_${files.length}_files_processed.xlsx`)
+        );
+        toast.success(MESSAGES.SUCCESS.PROCESSING);
+      }, 800);
+    } catch (err) {
+      // Clear step timers
+      stepTimers.forEach(clearTimeout);
+      setIsProcessing(false);
+      setError(err.message || MESSAGES.ERROR.PROCESSING_FAILED);
+      toast.error(err.message || MESSAGES.ERROR.PROCESSING_FAILED);
+    }
   }, [files]);
 
-  // Mock results for the analysis view
-  const getMockResults = () => {
+  // Extract results from the API response for the form
+  const getResultsFromResponse = useCallback(() => {
+    // If API returned extracted data, use it, otherwise return empty defaults
+    // The API response structure may vary – adapt as needed
     return {
-      purchaserName: 'Americo Financial Life and Annuity Insurance Company',
-      registeredNoteNo: '9557c0ae-0853-4400-a085-deac9c3ba249',
-      principalAmount: '25,000,000.00',
-      wireTransfer: 'C/O AMERICO LIFE, INC, 300 WEST 11TH STREET, KANSAS CITY, MO 64105. Bank: Chase Manhattan, Account: 12345678, Routing: 987654321.',
-      noticesConfirmations: 'Attn: General Counsel, 300 West 11th Street, Kansas City, MO 64105. Email: legal@americo.com',
-      electronicDeliveryEmail: 'investor-relations@americo.com',
-      otherCommunications: 'Regular reports to be sent quarterly via electronic delivery.',
-      taxId: '12-3456789',
-      registerNotesName: 'Americo Financial Life and Annuity Insurance Company (Series A)'
+      purchaserName: apiResponse?.purchaserName || '',
+      registeredNoteNo: apiResponse?.registeredNoteNo || '',
+      principalAmount: apiResponse?.principalAmount || '',
+      wireTransfer: apiResponse?.wireTransfer || '',
+      noticesConfirmations: apiResponse?.noticesConfirmations || '',
+      electronicDeliveryEmail: apiResponse?.electronicDeliveryEmail || '',
+      otherCommunications: apiResponse?.otherCommunications || '',
+      taxId: apiResponse?.taxId || '',
+      registerNotesName: apiResponse?.registerNotesName || ''
     };
-  };
+  }, [apiResponse]);
 
   const handleDownload = useCallback(() => {
+    // Download output file if available
+    if (apiResponse?.output_file?.sas_url) {
+      window.open(apiResponse.output_file.sas_url, '_blank');
+    }
     toast.success(MESSAGES.SUCCESS.DOWNLOAD);
-    // Reset state for new upload
-    setTimeout(() => {
-      setFiles([]);
-      setIsComplete(false);
-      setIsProcessing(false);
-      setCurrentStep(-1);
-      setProcessedFileName('');
-    }, 1000);
-  }, []);
+  }, [apiResponse]);
 
   const getStepIcon = (step, index) => {
     const isActive = index === currentStep;
@@ -335,7 +365,9 @@ const Upload = () => {
   if (isComplete) {
     return (
       <AnalysisResult 
-        data={getMockResults()} 
+        data={getResultsFromResponse()} 
+        inputFiles={apiResponse?.input_files || []}
+        outputFile={apiResponse?.output_file}
         onReset={handleReset} 
         onDownload={handleDownload} 
       />
@@ -451,7 +483,7 @@ const Upload = () => {
             {/* Upload Button */}
             <button
               className={styles.uploadButton}
-              onClick={simulateProcessing}
+              onClick={handleProcessFiles}
               disabled={files.length === 0}
               id="upload-analyze-btn"
             >

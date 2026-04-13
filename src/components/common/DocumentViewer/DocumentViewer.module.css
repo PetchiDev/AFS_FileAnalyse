@@ -71,11 +71,16 @@
 .fileInfo {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
 }
 
 .fileName {
   font-size: 16px;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fileSize {
@@ -87,6 +92,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .actionBtn, .closeBtn {
@@ -152,6 +158,84 @@
   100% { transform: rotate(360deg); }
 }
 
+/* ─── MSG Fallback Styles ─── */
+.msgFallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 24px;
+  text-align: center;
+  background: linear-gradient(135deg, #fefefe 0%, #f8fafc 100%);
+}
+
+.msgIconContainer {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: #D97706;
+  animation: pulseIcon 2s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.msgTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 8px 0;
+}
+
+.msgFileName {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 16px 0;
+  word-break: break-all;
+  max-width: 400px;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  font-family: monospace;
+}
+
+.msgDescription {
+  font-size: 14px;
+  color: #94A3B8;
+  margin: 0 0 28px 0;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.msgDownloadBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #0F172A, #1e293b);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+}
+
+.msgDownloadBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
+}
+
 @media (max-width: 768px) {
   .viewerHeader {
     padding: 12px 16px;
@@ -160,5 +244,14 @@
   .actionBtn, .closeBtn {
     width: 36px;
     height: 36px;
+  }
+
+  .msgIconContainer {
+    width: 90px;
+    height: 90px;
+  }
+
+  .msgTitle {
+    font-size: 18px;
   }
 }

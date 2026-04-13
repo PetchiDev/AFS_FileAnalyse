@@ -109,21 +109,21 @@
   background: var(--color-primary-dark);
 }
 
-/* Layout Grid */
-.layoutContainer {
+/* Layout Grid Redesign */
+.mainGrid {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 1fr 380px;
   gap: 2rem;
   align-items: start;
 }
 
-.mainContent {
+.leftColumn {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
-.sideRail {
+.rightColumn {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -131,350 +131,117 @@
   top: 2rem;
 }
 
-/* Premium Glass Cards */
-.glassCard {
-  background: white;
-  border-radius: 28px;
-  border: 1px solid var(--color-border);
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-  transition: all 0.3s ease;
+/* File Gallery in Detail View */
+.fileGallery {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 32px 32px;
 }
 
-.glassCard:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-}
-
-.cardHeader {
-  padding: 24px 32px;
-  background: #fcfcfc;
-  border-bottom: 1px solid #f5f5f5;
+.fileCard {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.iconBg {
-  width: 44px;
-  height: 44px;
-  background: #fff1f2;
-  color: var(--color-primary);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 2px 4px rgba(238, 32, 46, 0.05);
-}
-
-.cardHeader h2 {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.cardBody {
-  padding: 32px;
-}
-
-/* Data Presentation */
-.dataGroup label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-}
-
-.legalNameHighlight {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: var(--color-text-primary);
-  line-height: 1.2;
-  margin-bottom: 2rem;
-}
-
-.dataGrid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 2rem;
-}
-
-.addressValue {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--color-text-primary);
-}
-
-.taxId {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  word-break: break-word;
-}
-
-/* Financial Badges */
-.primeStatsGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
-.primeStatBadge {
+  justify-content: space-between;
+  padding: 16px;
   background: #f8fafc;
-  padding: 24px;
-  border-radius: 20px;
   border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.primeStatBadge label {
-  color: #64748b;
-  margin-bottom: 12px;
-}
-
-.amountText {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: var(--color-primary);
-}
-
-.seriesText {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-/* Wire Instructions */
-.wireInstructionGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-}
-
-.bankName, .abaNumber, .accNumber, .refInfo {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-/* Side Rail Styles */
-.sideCard {
+.fileCard:hover {
   background: white;
-  border-radius: 24px;
-  border: 1px solid var(--color-border);
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.sideCard .cardHeader {
-  padding: 0 0 16px 0;
-  background: transparent;
-  border-bottom: 1px solid #f5f5f5;
-  margin-bottom: 16px;
-  gap: 12px;
-}
-
-.sideCard .iconBg {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-}
-
-.sideCard h3 {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.metaList, .commStack {
+.fileCardInfo {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
 }
 
-.metaItem {
-  display: flex;
-  gap: 12px;
-  color: var(--color-text-secondary);
-}
-
-.metaText {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow: hidden;
-}
-
-.metaText label {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #94a3b8;
-}
-
-.metaText span {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  word-break: break-all;
-  white-space: normal;
-}
-
-.emailBadge {
+.fileNameRow {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  background: #f8fafc;
-  border-radius: 10px;
-  color: var(--color-primary);
-  font-size: 13px;
+}
+
+.fileName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outputBadge {
+  font-size: 9px;
+  font-weight: 800;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.fileType {
+  font-size: 11px;
   font-weight: 600;
-  border: 1px solid #f1f5f9;
+  color: #94a3b8;
 }
 
-.smallAddress {
+.viewIcon {
+  color: #94a3b8;
+  margin-left: 12px;
+}
+
+.fileCard:hover .viewIcon {
+  color: var(--color-primary);
+}
+
+.statusText {
   font-size: 13px;
-  line-height: 1.5;
-  color: var(--color-text-secondary);
-}
-
-/* Loading & Error States */
-.loadingWrapper, .errorWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  gap: 1.5rem;
-}
-
-.loader {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--color-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  font-weight: 700;
+  color: #10b981;
+  text-transform: capitalize;
 }
 
 /* Responsive Overrides */
 @media (max-width: 1100px) {
-  .layoutContainer {
+  .mainGrid {
     grid-template-columns: 1fr;
   }
-  .sideRail {
+  .rightColumn {
     position: static;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
   .detailWrapper {
-    padding: 1rem;
-    overflow-x: hidden;
+    padding: 1.5rem;
   }
   
   .header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .mainGrid {
     gap: 1.5rem;
-    margin-bottom: 2rem;
   }
 
-  .headerLeft {
-    gap: 1rem;
-  }
-
-  .titleArea {
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .titleArea h1 {
-    font-size: 1.5rem;
-    width: 100%;
-  }
-
-  .statusIndicator {
-    padding: 4px 10px;
-    font-size: 11px;
-  }
-
-  .headerRight {
-    width: 100%;
-  }
-
-  .downloadBtn {
-    width: 100%;
-    justify-content: center;
-    padding: 12px;
-    font-size: 14px;
-  }
-
-  .sideRail {
-    grid-template-columns: 1fr;
-  }
-  
-  .dataGrid, .primeStatsGrid, .wireInstructionGrid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
-  .glassCard, .sideCard {
-    border-radius: 20px;
-  }
-
-  .cardHeader {
-    padding: 16px 20px;
-  }
-
-  .cardBody {
-    padding: 20px;
+  .fileGallery {
+    padding: 0 20px 20px;
   }
 
   .legalNameHighlight {
-    font-size: 1.25rem;
-    word-break: break-word;
-  }
-
-  .amountText {
     font-size: 1.5rem;
-  }
-
-  .seriesText {
-    font-size: 1.25rem;
-  }
-
-  .primeStatBadge {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .detailWrapper {
-    padding: 0.75rem;
-  }
-
-  .titleArea h1 {
-    font-size: 1.35rem;
-  }
-
-  .backBtn {
-    padding: 6px 12px;
-    font-size: 12px;
   }
 }

@@ -480,17 +480,20 @@ const Dashboard = () => {
         ) : isComplete && activeTab === 'upload' ? (
           <AnalysisResult 
             data={{
-              purchaserName: processResult?.extracted_data?.company_name || '',
-              registeredNoteNo: processResult?.extracted_data?.cusip_ppn || '',
-              principalAmount: processResult?.extracted_data?.principal_amount || '',
+              purchaserName: processResult?.extracted_data?.company_name || processResult?.purchaserName || '',
+              registeredNoteNo: processResult?.extracted_data?.cusip_ppn || processResult?.registeredNoteNo || '',
+              principalAmount: processResult?.extracted_data?.principal_amount || processResult?.principalAmount || '',
               wireTransfer: processResult?.extracted_data?.wire_transfer?.bank_name ? 
-                `${processResult?.extracted_data?.wire_transfer?.bank_name}\nAcc: ${processResult?.extracted_data?.wire_transfer?.account_number}\nABA: ${processResult?.extracted_data?.wire_transfer?.aba_number}` : '',
-              noticesConfirmations: processResult?.extracted_data?.payment_notices_address || '',
-              electronicDeliveryEmail: processResult?.extracted_data?.email_electronic_delivery || '',
-              otherCommunications: processResult?.extracted_data?.delivery_instructions || '',
-              taxId: processResult?.extracted_data?.tax_id || '',
-              registerNotesName: processResult?.extracted_data?.company_name || ''
+                `${processResult?.extracted_data?.wire_transfer?.bank_name}\nAcc: ${processResult?.extracted_data?.wire_transfer?.account_number}\nABA: ${processResult?.extracted_data?.wire_transfer?.aba_number}` : 
+                (processResult?.wireTransfer || ''),
+              noticesConfirmations: processResult?.extracted_data?.payment_notices_address || processResult?.noticesConfirmations || '',
+              electronicDeliveryEmail: processResult?.extracted_data?.email_electronic_delivery || processResult?.electronicDeliveryEmail || '',
+              otherCommunications: processResult?.extracted_data?.delivery_instructions || processResult?.otherCommunications || '',
+              taxId: processResult?.extracted_data?.tax_id || processResult?.taxId || '',
+              registerNotesName: processResult?.extracted_data?.company_name || processResult?.registerNotesName || ''
             }}
+            inputFiles={processResult?.input_files || []}
+            outputFile={processResult?.output_file}
             onReset={resetUpload}
             onDownload={(e) => handleDownload(e, processResult?.output_file?.sas_url)}
           />
