@@ -7,6 +7,7 @@ import {
   PROCESSING_STEPS_LIST,
   MESSAGES
 } from '@/config/constants';
+import AnalysisResult from './components/AnalysisResult';
 import styles from './Upload.module.css';
 
 const Upload = () => {
@@ -260,6 +261,21 @@ const Upload = () => {
     setTimeout(advanceStep, stepDurations[0]);
   }, [files]);
 
+  // Mock results for the analysis view
+  const getMockResults = () => {
+    return {
+      purchaserName: 'Americo Financial Life and Annuity Insurance Company',
+      registeredNoteNo: '9557c0ae-0853-4400-a085-deac9c3ba249',
+      principalAmount: '25,000,000.00',
+      wireTransfer: 'C/O AMERICO LIFE, INC, 300 WEST 11TH STREET, KANSAS CITY, MO 64105. Bank: Chase Manhattan, Account: 12345678, Routing: 987654321.',
+      noticesConfirmations: 'Attn: General Counsel, 300 West 11th Street, Kansas City, MO 64105. Email: legal@americo.com',
+      electronicDeliveryEmail: 'investor-relations@americo.com',
+      otherCommunications: 'Regular reports to be sent quarterly via electronic delivery.',
+      taxId: '12-3456789',
+      registerNotesName: 'Americo Financial Life and Annuity Insurance Company (Series A)'
+    };
+  };
+
   const handleDownload = useCallback(() => {
     toast.success(MESSAGES.SUCCESS.DOWNLOAD);
     // Reset state for new upload
@@ -314,6 +330,17 @@ const Upload = () => {
         return null;
     }
   };
+
+  // If processing is complete, show the rich analysis interface
+  if (isComplete) {
+    return (
+      <AnalysisResult 
+        data={getMockResults()} 
+        onReset={handleReset} 
+        onDownload={handleDownload} 
+      />
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -483,47 +510,6 @@ const Upload = () => {
                 className={styles.progressBar}
                 style={{ width: `${((currentStep + 1) / PROCESSING_STEPS_LIST.length) * 100}%` }}
               />
-            </div>
-          </div>
-        )}
-
-        {/* Success / Download */}
-        {isComplete && (
-          <div ref={successRef} className={styles.successSection}>
-            <div className={styles.successIcon}>
-              <svg viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <h2 className={styles.successTitle}>Processing Complete!</h2>
-            <p className={styles.successSubtitle}>Your file has been successfully processed and is ready for download.</p>
-            <div className={styles.successFileCard}>
-              <svg className={styles.successFileIcon} viewBox="0 0 24 24" fill="none">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className={styles.successFileName}>{processedFileName}</span>
-            </div>
-            <div className={styles.successActions}>
-              <button
-                className={styles.downloadButton}
-                onClick={handleDownload}
-                id="download-file-btn"
-              >
-                <svg className={styles.downloadBtnIcon} viewBox="0 0 24 24" fill="none">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Download File
-              </button>
-              <button
-                className={styles.resetButton}
-                onClick={handleReset}
-              >
-                Upload Another File
-              </button>
             </div>
           </div>
         )}

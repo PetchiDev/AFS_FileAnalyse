@@ -35,6 +35,7 @@ import {
 import DeleteConfirmationModal from '@/components/common/DeleteConfirmationModal/DeleteConfirmationModal';
 import { getSafeViewerUrl } from '@/utils/fileUtils';
 import AFS_favicon from '@/assets/images/AFS_favicon.gif';
+import AnalysisResult from '../Upload/components/AnalysisResult';
 import styles from './Dashboard.module.css';
 
 const PROCESSING_MESSAGES = [
@@ -366,7 +367,7 @@ const Dashboard = () => {
       </div>
 
       <div className={styles.contentContainer}>
-        {activeTab === 'upload' ? (
+        {activeTab === 'upload' && !isComplete ? (
           <div className={styles.card}>
             <div className={styles.panelHeader}>
               <div>
@@ -449,7 +450,7 @@ const Dashboard = () => {
                   </button>
                 </div>
               </div>
-            ) : isProcessing ? (
+            ) : (
               <div className={styles.processingSection}>
                 <div className={styles.loadingHeader}>
                   <div className={styles.processingStepTitle}>
@@ -474,43 +475,25 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className={styles.successSection}>
-                <CheckCircle2 size={48} className={styles.successIcon} />
-                <h3>Processing Complete!</h3>
-                <p>Your file has been successfully processed and is ready for download.</p>
-
-                {processResult?.output_file && (
-                  <div className={styles.previewWrapper}>
-                    <div className={styles.previewContainer}>
-                      <iframe
-                        src={getSafeViewerUrl(processResult.output_file.sas_url)}
-                        className={styles.previewIframe}
-                        frameBorder="0"
-                      />
-                    </div>
-                    <button
-                      className={styles.fullViewBtn}
-                      onClick={(e) => handleDownload(e, processResult.output_file.sas_url)}
-                    >
-                      <ExternalLink size={16} />
-                      <span>Click to open full version</span>
-                    </button>
-                  </div>
-                )}
-
-                <div className={styles.successActions}>
-                  <button
-                    className={styles.downloadBtn}
-                    onClick={(e) => handleDownload(e, processResult?.output_file?.sas_url)}
-                  >
-                    <Download size={18} /> Download File
-                  </button>
-                  <button className={styles.newBtn} onClick={resetUpload}>Upload Another File</button>
-                </div>
-              </div>
             )}
           </div>
+        ) : isComplete && activeTab === 'upload' ? (
+          <AnalysisResult 
+            data={{
+              purchaserName: processResult?.extracted_data?.company_name || '',
+              registeredNoteNo: processResult?.extracted_data?.cusip_ppn || '',
+              principalAmount: processResult?.extracted_data?.principal_amount || '',
+              wireTransfer: processResult?.extracted_data?.wire_transfer?.bank_name ? 
+                `${processResult?.extracted_data?.wire_transfer?.bank_name}\nAcc: ${processResult?.extracted_data?.wire_transfer?.account_number}\nABA: ${processResult?.extracted_data?.wire_transfer?.aba_number}` : '',
+              noticesConfirmations: processResult?.extracted_data?.payment_notices_address || '',
+              electronicDeliveryEmail: processResult?.extracted_data?.email_electronic_delivery || '',
+              otherCommunications: processResult?.extracted_data?.delivery_instructions || '',
+              taxId: processResult?.extracted_data?.tax_id || '',
+              registerNotesName: processResult?.extracted_data?.company_name || ''
+            }}
+            onReset={resetUpload}
+            onDownload={(e) => handleDownload(e, processResult?.output_file?.sas_url)}
+          />
         ) : (
           <div className={styles.card}>
             <div className={styles.summaryStats}>
