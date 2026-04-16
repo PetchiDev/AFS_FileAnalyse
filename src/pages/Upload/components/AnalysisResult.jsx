@@ -36,18 +36,6 @@ const AnalysisResult = ({ data, inputFiles = [], outputFile = null, onReset, onD
   // Build docs list from API input_files and output_file
   const docs = [];
   
-  // Prepend output file if available
-  if (outputFile) {
-    const ext = getFileExtension(outputFile.original_filename);
-    docs.push({
-      id: 'output-1',
-      name: outputFile.original_filename,
-      type: ext.toUpperCase(),
-      url: outputFile.sas_url,
-      isOutput: true
-    });
-  }
-
   // Add input files
   inputFiles.forEach((file, index) => {
     const ext = getFileExtension(file.original_filename);
@@ -72,13 +60,25 @@ const AnalysisResult = ({ data, inputFiles = [], outputFile = null, onReset, onD
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleDownload = () => {
+    if (!outputFile?.sas_url) return;
+    
+    const link = document.createElement('a');
+    link.href = outputFile.sas_url;
+    link.download = outputFile.original_filename || 'generated_document.docx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleSave = () => {
     setIsSaving(true);
-    // Simulate API call
+    
+    // Simulate saving process
     setTimeout(() => {
       setIsSaving(false);
-      // In a real app, we'd trigger a toast here
-    }, 1000);
+      handleDownload();
+    }, 800);
   };
 
   const getFileIconComponent = (type) => {
@@ -99,21 +99,67 @@ const AnalysisResult = ({ data, inputFiles = [], outputFile = null, onReset, onD
 
   return (
     <div className={styles.analysisContainer}>
-      {/* Left Pane - Editable Form */}
+      {/* Left Pane - File Gallery / Viewer */}
+      <div className={`${styles.rightPane} analysis-animate`}>
+        {selectedDoc ? (
+          <DocumentViewer 
+            file={selectedDoc} 
+            isEmbedded={true}
+            onClose={() => setSelectedDoc(null)} 
+          />
+        ) : (
+          <>
+            <div className={styles.paneHeader}>
+              <h2 className={styles.paneTitle}>Associated Files</h2>
+              <div className={styles.headerActions}>
+                <button className={styles.downloadBtn} onClick={onDownload}>
+                  <Download size={16} /> Download All
+                </button>
+                <button className={styles.resetBtn} onClick={onReset}>
+                  <RotateCcw size={16} /> New Upload
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.fileGallery}>
+              {docs.length > 0 ? (
+                docs.map(file => (
+                  <div 
+                    key={file.id} 
+                    className={styles.fileCard}
+                    onClick={() => setSelectedDoc(file)}
+                  >
+                    <div className={`${styles.fileIconBox} ${getFileIconBgClass(file.type)}`}>
+                      {getFileIconComponent(file.type)}
+                    </div>
+                    <div className={styles.fileCardContent}>
+                      <div className={styles.fileCardHeader}>
+                        <span className={styles.fileCardName}>{file.name}</span>
+                        {file.isOutput && <span className={styles.outputBadge}>Generated</span>}
+                      </div>
+                      <span className={styles.fileCardMeta}>{file.type}</span>
+                    </div>
+                    <ChevronRight className={styles.fileCardArrow} size={18} />
+                  </div>
+                ))
+              ) : (
+                <div className={styles.emptyDocs}>
+                  <FileText size={40} strokeWidth={1.2} />
+                  <p>No source documents available</p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Right Pane - Editable Form */}
       <div className={`${styles.leftPane} analysis-animate`}>
         <div className={styles.paneHeader}>
           <div className={styles.paneTitleGroup}>
             <CheckCircle2 className={styles.successIconSmall} size={20} />
             <h2 className={styles.paneTitle}>Extracted Information</h2>
           </div>
-          <button 
-            className={styles.saveBtn} 
-            onClick={handleSave} 
-            disabled={isSaving}
-          >
-            <Save size={16} />
-            {isSaving ? 'Saving...' : 'Save Changes'}
-          </button>
         </div>
 
         <div className={styles.formContent}>
@@ -248,60 +294,17 @@ const AnalysisResult = ({ data, inputFiles = [], outputFile = null, onReset, onD
             />
           </div>
         </div>
-      </div>
 
-      {/* Right Pane - File Gallery / Viewer */}
-      <div className={`${styles.rightPane} analysis-animate`}>
-        {selectedDoc ? (
-          <DocumentViewer 
-            file={selectedDoc} 
-            isEmbedded={true}
-            onClose={() => setSelectedDoc(null)} 
-          />
-        ) : (
-          <>
-            <div className={styles.paneHeader}>
-              <h2 className={styles.paneTitle}>Associated Files</h2>
-              <div className={styles.headerActions}>
-                <button className={styles.downloadBtn} onClick={onDownload}>
-                  <Download size={16} /> Download All
-                </button>
-                <button className={styles.resetBtn} onClick={onReset}>
-                  <RotateCcw size={16} /> New Upload
-                </button>
-              </div>
-            </div>
-
-            <div className={styles.fileGallery}>
-              {docs.length > 0 ? (
-                docs.map(file => (
-                  <div 
-                    key={file.id} 
-                    className={styles.fileCard}
-                    onClick={() => setSelectedDoc(file)}
-                  >
-                    <div className={`${styles.fileIconBox} ${getFileIconBgClass(file.type)}`}>
-                      {getFileIconComponent(file.type)}
-                    </div>
-                    <div className={styles.fileCardContent}>
-                      <div className={styles.fileCardHeader}>
-                        <span className={styles.fileCardName}>{file.name}</span>
-                        {file.isOutput && <span className={styles.outputBadge}>Generated</span>}
-                      </div>
-                      <span className={styles.fileCardMeta}>{file.type}</span>
-                    </div>
-                    <ChevronRight className={styles.fileCardArrow} size={18} />
-                  </div>
-                ))
-              ) : (
-                <div className={styles.emptyDocs}>
-                  <FileText size={40} strokeWidth={1.2} />
-                  <p>No source documents available</p>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+        <div className={styles.paneFooter}>
+          <button 
+            className={styles.saveBtn} 
+            onClick={handleSave} 
+            disabled={isSaving}
+          >
+            <Save size={16} />
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
     </div>
   );

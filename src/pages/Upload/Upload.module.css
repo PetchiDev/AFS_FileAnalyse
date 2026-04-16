@@ -186,6 +186,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -406,9 +407,12 @@
 }
 
 @keyframes pulseCircle {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(238, 32, 46, 0.2);
   }
+
   50% {
     box-shadow: 0 0 0 8px rgba(238, 32, 46, 0);
   }
@@ -489,10 +493,14 @@
 }
 
 @keyframes pulseDot {
-  0%, 80%, 100% {
+
+  0%,
+  80%,
+  100% {
     opacity: 0.3;
     transform: scale(0.8);
   }
+
   40% {
     opacity: 1;
     transform: scale(1.2);
@@ -752,8 +760,7 @@
     font-size: 18px;
   }
 }
-  .heroTitle {
-    font-size: 18px;
-  }
-}
 
+.heroTitle {
+  font-size: 18px;
+}
