@@ -182,25 +182,20 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
-    if (activeTab === 'reports') {
-      loadHistory(currentPage);
-    }
-  }, [activeTab, currentPage]);
-
-  // Handle server-side search with 2s debounce
+  // Consolidated effect to handle tab change, pagination, and debounced search
   useEffect(() => {
     if (activeTab !== 'reports') return;
 
+    // Use a short debounce for search, immediate for tab/page navigation
+    const delay = searchQuery ? 500 : 0;
     const timer = setTimeout(() => {
-      setCurrentPage(1); // Reset to first page
-      loadHistory(1, searchQuery);
-    }, 2000);
+      loadHistory(currentPage, searchQuery);
+    }, delay);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, activeTab]);
+  }, [activeTab, currentPage, searchQuery]);
 
-  const handleDownload = (e, url) => {
+  const handleDownload = (e, url, fileName = 'document') => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -212,11 +207,19 @@ const Dashboard = () => {
     }
 
     try {
-      const viewerUrl = getSafeViewerUrl(url);
-      window.open(viewerUrl, '_blank');
+      // Direct download using a temporary anchor tag for better behavior with SAS URLs
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      link.setAttribute('target', '_blank'); // Open in new tab if browser doesn't force download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success('Download initiated');
     } catch (err) {
       console.error('Download error:', err);
-      toast.error('Failed to open download link');
+      toast.error('Failed to initiate download');
     }
   };
 
@@ -483,7 +486,11 @@ const Dashboard = () => {
             inputFiles={processResult?.input_files || []}
             outputFile={processResult?.output_file}
             onReset={resetUpload}
-            onDownload={(e) => handleDownload(e, processResult?.output_file?.sas_url)}
+            onDownload={(e) => handleDownload(
+              e, 
+              processResult?.output_file?.sas_url,
+              processResult?.output_file?.original_filename || `${processResult?.extracted_data?.company_name || 'Processed'}_Schedule.docx`
+            )}
           />
         ) : (
           <div className={styles.card}>
@@ -536,8 +543,8 @@ const Dashboard = () => {
                           <div className={styles.fileIcon}>
                             <FileText size={18} />
                           </div>
-                          <span title={report.output_file?.original_filename || 'Unknown'}>
-                            {report.output_file?.original_filename || 'Unknown'}
+                          <span title={report.output_file?.original_filename || `${report.extracted_data?.company_name || 'Processed'} Schedule`}>
+                            {report.output_file?.original_filename || `${report.extracted_data?.company_name || 'Processed'} Schedule`}
                           </span>
                         </div>
                       </td>
@@ -570,7 +577,11 @@ const Dashboard = () => {
                             <button
                               className={styles.actionBtn}
                               title="Download"
-                              onClick={(e) => handleDownload(e, report.output_file?.sas_url)}
+                              onClick={(e) => handleDownload(
+                                e, 
+                                report.output_file?.sas_url, 
+                                report.output_file?.original_filename || `${report.extracted_data?.company_name || 'Processed'}_Schedule.docx`
+                              )}
                             >
                               <Download size={16} />
                               <span>Download</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from '@tanstack/react-router';
 import {
   ArrowLeft,
@@ -28,11 +28,18 @@ const ProcessingDetail = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchedIdRef = useRef(null);
+
   useEffect(() => {
+    // Prevent double fetch for same ID (common during route transitions or StrictMode)
+    if (fetchedIdRef.current === id && data) return;
+
     const fetchDetail = async () => {
       try {
+        setLoading(true);
         const response = await analysisService.getProcessingDetail(id);
         setData(response.record);
+        fetchedIdRef.current = id;
       } catch (err) {
         toast.error('Failed to load processing details');
         console.error(err);
@@ -41,7 +48,7 @@ const ProcessingDetail = () => {
       }
     };
     fetchDetail();
-  }, [id]);
+  }, [id, data]);
 
   if (loading) {
     return (
@@ -88,8 +95,14 @@ const ProcessingDetail = () => {
               className={styles.downloadBtn}
               onClick={(e) => {
                 e.preventDefault();
-                e.stopPropagation();
-                window.open(getSafeViewerUrl(output_file.sas_url), '_blank');
+                const link = document.createElement('a');
+                link.href = output_file.sas_url;
+                link.setAttribute('download', output_file.original_filename || 'report.docx');
+                link.setAttribute('target', '_blank');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                toast.success('Download initiated');
               }}
             >
               <Download size={18} />
