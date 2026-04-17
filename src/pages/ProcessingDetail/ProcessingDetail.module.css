@@ -51,7 +51,7 @@
 }
 
 .backBtn:hover {
-  background: white;
+  background: var(--color-bg-primary);
   color: var(--color-primary);
   border-color: var(--color-primary);
   transform: translateX(-5px);
@@ -77,7 +77,7 @@
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  background: white;
+  background: var(--color-bg-primary);
   border: 1px solid var(--color-border);
   border-radius: 100px;
   font-size: 13px;
@@ -147,7 +147,7 @@
 
 /* Premium Glass Cards */
 .glassCard {
-  background: white;
+  background: var(--color-bg-primary);
   border-radius: 28px;
   border: 1px solid var(--color-border);
   overflow: hidden;
@@ -161,8 +161,8 @@
 
 .cardHeader {
   padding: 24px 32px;
-  background: #fcfcfc;
-  border-bottom: 1px solid #f5f5f5;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -171,7 +171,7 @@
 .iconBg {
   width: 44px;
   height: 44px;
-  background: #fff1f2;
+  background: var(--color-bg-primary);
   color: var(--color-primary);
   border-radius: 14px;
   display: flex;
@@ -240,10 +240,10 @@
 }
 
 .primeStatBadge {
-  background: #f8fafc;
+  background: var(--color-bg-secondary);
   padding: 24px;
   border-radius: 20px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--color-border);
 }
 
 .primeStatBadge label {
@@ -281,7 +281,7 @@
 
 /* Side Rail Styles */
 .sideCard {
-  background: white;
+  background: var(--color-bg-primary);
   border-radius: 24px;
   border: 1px solid var(--color-border);
   padding: 24px;
@@ -291,7 +291,7 @@
 .sideCard .cardHeader {
   padding: 0 0 16px 0;
   background: transparent;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 16px;
   gap: 12px;
 }
@@ -349,12 +349,12 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: #f8fafc;
+  background: var(--color-bg-secondary);
   border-radius: 10px;
   color: var(--color-primary);
   font-size: 13px;
   font-weight: 600;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--color-border);
 }
 
 .smallAddress {
@@ -377,7 +377,7 @@
 .loader {
   width: 50px;
   height: 50px;
-  border: 4px solid #f3f3f3;
+  border: 4px solid var(--color-bg-secondary);
   border-top: 4px solid var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;

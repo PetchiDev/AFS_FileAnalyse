@@ -294,19 +294,36 @@ const Upload = () => {
   }, [files]);
 
   // Extract results from the API response for the form
+  // Matches the generated document template structure exactly
   const getResultsFromResponse = useCallback(() => {
-    // If API returned extracted data, use it, otherwise return empty defaults
-    // The API response structure may vary – adapt as needed
+    const ext = apiResponse?.extracted_data || {};
+    
+    // Format wire_transfer object into a single text block (matching document template)
+    const wt = ext.wire_transfer || {};
+    let wireTransferText = '';
+    if (wt.bank_name) {
+      wireTransferText = wt.bank_name;
+      if (wt.aba_number) wireTransferText += `\nABA # ${wt.aba_number}`;
+      if (wt.account_number) {
+        wireTransferText += `\nAccount # ${wt.account_number}`;
+        if (wt.account_name) wireTransferText += `, ${wt.account_name}`;
+      }
+      if (wt.reference_info) wireTransferText += `\n${wt.reference_info}`;
+      if (wt.additional_info) wireTransferText += `\n${wt.additional_info}`;
+    }
+
     return {
-      purchaserName: apiResponse?.purchaserName || '',
-      registeredNoteNo: apiResponse?.registeredNoteNo || '',
-      principalAmount: apiResponse?.principalAmount || '',
-      wireTransfer: apiResponse?.wireTransfer || '',
-      noticesConfirmations: apiResponse?.noticesConfirmations || '',
-      electronicDeliveryEmail: apiResponse?.electronicDeliveryEmail || '',
-      otherCommunications: apiResponse?.otherCommunications || '',
-      taxId: apiResponse?.taxId || '',
-      registerNotesName: apiResponse?.registerNotesName || ''
+      companyName: ext.company_name || '',
+      principalAmount: ext.principal_amount || '',
+      wireTransfer: wireTransferText,
+      paymentNoticesAddress: ext.payment_notices_address || '',
+      emailElectronicDelivery: ext.email_electronic_delivery || '',
+      otherCommunicationsAddress: ext.other_communications_address || '',
+      taxId: ext.tax_id || '',
+      registerNotesName: ext.nominee_name || '',
+      deliveryInstructions: ext.delivery_instructions || '',
+      securityDescription: ext.security_description || '',
+      cusipPpn: ext.cusip_ppn || ''
     };
   }, [apiResponse]);
 
@@ -365,7 +382,7 @@ const Upload = () => {
   if (isComplete) {
     return (
       <AnalysisResult 
-        data={getResultsFromResponse()} 
+        apiResponse={apiResponse}
         inputFiles={apiResponse?.input_files || []}
         outputFile={apiResponse?.output_file}
         onReset={handleReset} 

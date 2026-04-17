@@ -170,23 +170,23 @@ const ProcessingDetail = () => {
               <h2>Wire Transfer Instructions</h2>
             </div>
             <div className={styles.cardBody}>
-              <div className={styles.wireInstructionGrid}>
-                <div className={styles.dataGroup}>
-                  <label>Receiving Bank</label>
-                  <p className={styles.bankName}>{extracted_data?.wire_transfer?.bank_name || 'N/A'}</p>
-                </div>
-                <div className={styles.dataGroup}>
-                  <label>ABA Routing Number</label>
-                  <p className={styles.abaNumber}>{extracted_data?.wire_transfer?.aba_number || 'N/A'}</p>
-                </div>
-                <div className={styles.dataGroup}>
-                  <label>Account Identifier</label>
-                  <p className={styles.accNumber}>{extracted_data?.wire_transfer?.account_number || 'N/A'}</p>
-                </div>
-                <div className={styles.dataGroup}>
-                  <label>Reference Information</label>
-                  <p className={styles.refInfo}>{extracted_data?.wire_transfer?.reference_info || 'N/A'}</p>
-                </div>
+              <div className={styles.wireInstructionBlock}>
+                {extracted_data?.wire_transfer ? (
+                  <>
+                    <p className={styles.bankName}>{extracted_data.wire_transfer.bank_name}</p>
+                    {extracted_data.wire_transfer.aba_number && <p className={styles.metaRow}>ABA # {extracted_data.wire_transfer.aba_number}</p>}
+                    {extracted_data.wire_transfer.account_number && (
+                      <p className={styles.metaRow}>
+                        Account # {extracted_data.wire_transfer.account_number}
+                        {extracted_data.wire_transfer.account_name && `, ${extracted_data.wire_transfer.account_name}`}
+                      </p>
+                    )}
+                    {extracted_data.wire_transfer.reference_info && <p className={styles.metaRow}>{extracted_data.wire_transfer.reference_info}</p>}
+                    {extracted_data.wire_transfer.additional_info && <p className={styles.metaRow}>{extracted_data.wire_transfer.additional_info}</p>}
+                  </>
+                ) : (
+                  <p className={styles.noData}>N/A</p>
+                )}
               </div>
             </div>
           </section>

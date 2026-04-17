@@ -416,6 +416,24 @@ export const analysisService = {
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error deleting processing record');
         }
+    },
+
+    /**
+     * Generate document from extracted data
+     * @param {Object} payload - { processing_id, extracted_data }
+     * @returns {Promise<Object>} Generation result
+     */
+    generateDocument: async (payload) => {
+        try {
+            const response = await apiClient.post(API.ENDPOINTS.GENERATE_DOCUMENT, payload);
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const data = error.response.data;
+                throw new Error(data.message || 'Error generating document');
+            }
+            throw new Error(error.message || 'Error connecting to generation API');
+        }
     }
 };
 

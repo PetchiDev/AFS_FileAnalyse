@@ -10,7 +10,8 @@ export const API = {
     REPORT_DOWNLOAD: '/api/v1/reports/download',
     PROCESS_FILES: '/api/v1/process',
     PROCESSINGS: '/api/v1/processings',
-    PROCESSING_DETAIL: '/api/v1/processings/'
+    PROCESSING_DETAIL: '/api/v1/processings/',
+    GENERATE_DOCUMENT: '/api/v1/generate'
   }
 };
 

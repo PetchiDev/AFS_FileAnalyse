@@ -110,6 +110,19 @@
   flex: 1;
 }
 
+.templateHeader {
+  display: flex;
+  gap: 16px;
+}
+
+.templateHeader>div:first-child {
+  flex: 2;
+}
+
+.templateHeader>div:last-child {
+  flex: 1;
+}
+
 .inputWithPrefix {
   display: flex;
   align-items: center;
@@ -350,6 +363,21 @@
   margin: 0;
 }
 
+/* ─── Section Divider ─── */
+.sectionDivider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0 4px;
+  margin-top: 4px;
+  border-top: 1px solid var(--color-border, #E5E7EB);
+  color: var(--color-primary, #EE202E);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 /* ─── Responsive for Analysis ─── */
 @media (max-width: 1200px) {
   .analysisContainer {
@@ -380,5 +408,15 @@
 
   .fileGallery {
     grid-template-columns: 1fr;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .templateHeader {
+    flex-direction: column;
+    gap: 16px;
   }
 }
