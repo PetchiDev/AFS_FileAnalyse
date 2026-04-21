@@ -166,20 +166,9 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
       const payload = {
         processing_id: apiResponse?.processing_id || apiResponse?.id,
         extracted_data: {
-          company_name: formData.companyName,
-          principal_amount: formData.principalAmount,
-          wire_transfer: parseWireTransfer(formData.wireTransfer),
-          payment_notices_address: formData.paymentNoticesAddress,
-          email_electronic_delivery: formData.emailElectronicDelivery,
-          other_communications_address: formData.otherCommunicationsAddress,
-          tax_id: formData.taxId,
-          nominee_name: formData.registerNotesName,
-          delivery_instructions: formData.deliveryInstructions,
-          security_description: formData.securityDescription,
-          cusip_ppn: formData.cusipPpn,
-          // Preserve other original fields if any
+          // Preserve any extra API fields not shown in the form
           ...apiResponse?.extracted_data,
-          // Explicitly overwrite with form values
+          // Form values declared once — these override the spread above
           company_name: formData.companyName,
           principal_amount: formData.principalAmount,
           wire_transfer: parseWireTransfer(formData.wireTransfer),

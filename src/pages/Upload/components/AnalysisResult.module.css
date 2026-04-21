@@ -387,7 +387,8 @@
 
   .leftPane,
   .rightPane {
-    height: 600px;
+    height: auto;
+    min-height: 80vh;
   }
 }
 

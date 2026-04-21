@@ -16,7 +16,7 @@ export const getSafeViewerUrl = (sasUrl) => {
     const isOfficeDoc = /\.(docx|doc|pptx|ppt|xlsx|xls)$/i.test(filePath);
     
     if (isOfficeDoc) {
-        return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(sasUrl)}`;
+        return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(sasUrl)}&wdMobileHost=2`;
     }
     
     // For PDFs, return the raw SAS URL - browser can render natively

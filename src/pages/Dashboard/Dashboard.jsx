@@ -161,14 +161,20 @@ const Dashboard = () => {
 
     if (!objectId) return;
 
+    const payload = {
+      object_id: objectId,
+      search_filename: search || undefined
+    };
+
+    // If searching, omit pagination parameters as requested
+    if (!search) {
+      payload.page_number = page;
+      payload.page_size = ITEMS_PER_PAGE;
+    }
+
     setReportsLoading(true);
     try {
-      const data = await analysisService.getProcessings({
-        object_id: objectId,
-        page_number: page,
-        page_size: ITEMS_PER_PAGE,
-        search_filename: search || undefined
-      });
+      const data = await analysisService.getProcessings(payload);
       setReports(data.records || []);
       setReportsPagination({
         totalRecords: data.total_records || 0,
@@ -506,18 +512,25 @@ const Dashboard = () => {
               </div>
             </div>
 
+            <div className={styles.searchBox}>
+              <Search size={16} />
+              <input
+                type="text"
+                placeholder="search by fileName"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button 
+                  className={styles.clearSearchBtn}
+                  onClick={() => setSearchQuery('')}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
             <div className={styles.tableWrapper}>
-              {/* <div className={styles.tableToolbar}>
-                <div className={styles.searchBox}>
-                  <Search size={16} />
-                  <input
-                    type="text"
-                    placeholder="Search reports..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-              </div> */}
 
               <table className={styles.reportsTable}>
                 <thead>
