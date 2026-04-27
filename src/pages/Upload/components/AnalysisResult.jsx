@@ -6,6 +6,7 @@ import {
   CheckCircle2, 
   Save,
   ChevronRight,
+  ChevronLeft,
   FileCode,
   Mail,
   CreditCard,
@@ -22,10 +23,15 @@ import { getFileExtension } from '@/utils/fileUtils';
 import styles from './AnalysisResult.module.css';
 
 const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onReset, onDownload }) => {
-  const mapResponseToData = (response) => {
-    const ext = response?.extracted_data || {};
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [formDataArray, setFormDataArray] = useState([]);
+  const [selectedDoc, setSelectedDoc] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const mapEntryToData = (entry) => {
+    const ext = entry?.extracted_data || {};
     
-    // Format wire_transfer object into a single text block (matching document template)
+    // Format wire_transfer object into a single text block
     const wt = ext.wire_transfer || {};
     let wireTransferText = '';
     if (wt.bank_name) {
@@ -54,31 +60,28 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
     };
   };
 
-  const initialData = mapResponseToData(apiResponse);
-
-  const [formData, setFormData] = useState({
-    companyName: initialData.companyName,
-    principalAmount: initialData.principalAmount,
-    wireTransfer: initialData.wireTransfer,
-    paymentNoticesAddress: initialData.paymentNoticesAddress,
-    emailElectronicDelivery: initialData.emailElectronicDelivery,
-    otherCommunicationsAddress: initialData.otherCommunicationsAddress,
-    taxId: initialData.taxId,
-    registerNotesName: initialData.registerNotesName,
-    deliveryInstructions: initialData.deliveryInstructions,
-    securityDescription: initialData.securityDescription,
-    cusipPpn: initialData.cusipPpn
-  });
-
-  // Sync apiResponse into formData whenever it changes
+  // Initialize formDataArray from apiResponse.purchaser_entries
   useEffect(() => {
-    if (apiResponse) {
-      setFormData(mapResponseToData(apiResponse));
+    if (apiResponse?.purchaser_entries) {
+      const initialArray = apiResponse.purchaser_entries.map(entry => mapEntryToData(entry));
+      setFormDataArray(initialArray);
     }
   }, [apiResponse]);
 
-  const [selectedDoc, setSelectedDoc] = useState(null);
-  const [isSaving, setIsSaving] = useState(false);
+  // Current form data based on index
+  const formData = formDataArray[currentIndex] || {
+    companyName: '',
+    principalAmount: '',
+    wireTransfer: '',
+    paymentNoticesAddress: '',
+    emailElectronicDelivery: '',
+    otherCommunicationsAddress: '',
+    taxId: '',
+    registerNotesName: '',
+    deliveryInstructions: '',
+    securityDescription: '',
+    cusipPpn: ''
+  };
 
   // Build docs list from API input_files
   const docs = [];
@@ -106,7 +109,6 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
 
     if (lines.length === 0) return wt;
 
-    // First line is bank name
     wt.bank_name = lines[0];
 
     for (let i = 1; i < lines.length; i++) {
@@ -125,7 +127,6 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
       } else if (line.toUpperCase().includes('REFERENCE:')) {
         wt.reference_info = line;
       } else {
-        // Fallback: if we haven't found reference info yet, assign it
         if (!wt.reference_info) {
           wt.reference_info = line;
         } else {
@@ -145,17 +146,47 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormDataArray(prev => {
+      const newArray = [...prev];
+      newArray[currentIndex] = { ...newArray[currentIndex], [name]: value };
+      return newArray;
+    });
   };
 
-  const handleDownload = () => {
-    if (!outputFile?.sas_url) return;
-    const link = document.createElement('a');
-    link.href = outputFile.sas_url;
-    link.download = outputFile.original_filename || 'generated_document.docx';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleNext = () => {
+    if (currentIndex < apiResponse.purchaser_entries.length - 1) {
+      // Transition effect
+      gsap.to('.form-content-animate', {
+        opacity: 0,
+        x: -20,
+        duration: 0.3,
+        onComplete: () => {
+          setCurrentIndex(prev => prev + 1);
+          gsap.fromTo('.form-content-animate', 
+            { opacity: 0, x: 20 },
+            { opacity: 1, x: 0, duration: 0.3 }
+          );
+        }
+      });
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      // Transition effect
+      gsap.to('.form-content-animate', {
+        opacity: 0,
+        x: 20,
+        duration: 0.3,
+        onComplete: () => {
+          setCurrentIndex(prev => prev - 1);
+          gsap.fromTo('.form-content-animate', 
+            { opacity: 0, x: -20 },
+            { opacity: 1, x: 0, duration: 0.3 }
+          );
+        }
+      });
+    }
   };
 
   const handleSave = async () => {
@@ -163,24 +194,31 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
     
     setIsSaving(true);
     try {
+      // Build the purchaser_entries array with updated extracted_data
+      const updatedPurchaserEntries = apiResponse.purchaser_entries.map((entry, index) => {
+        const data = formDataArray[index];
+        return {
+          source_file: entry.source_file,
+          extracted_data: {
+            ...entry.extracted_data,
+            company_name: data.companyName,
+            principal_amount: data.principalAmount,
+            wire_transfer: parseWireTransfer(data.wireTransfer),
+            payment_notices_address: data.paymentNoticesAddress,
+            email_electronic_delivery: data.emailElectronicDelivery,
+            other_communications_address: data.otherCommunicationsAddress,
+            tax_id: data.taxId,
+            nominee_name: data.registerNotesName,
+            delivery_instructions: data.deliveryInstructions,
+            security_description: data.securityDescription,
+            cusip_ppn: data.cusipPpn
+          }
+        };
+      });
+
       const payload = {
         processing_id: apiResponse?.processing_id || apiResponse?.id,
-        extracted_data: {
-          // Preserve any extra API fields not shown in the form
-          ...apiResponse?.extracted_data,
-          // Form values declared once — these override the spread above
-          company_name: formData.companyName,
-          principal_amount: formData.principalAmount,
-          wire_transfer: parseWireTransfer(formData.wireTransfer),
-          payment_notices_address: formData.paymentNoticesAddress,
-          email_electronic_delivery: formData.emailElectronicDelivery,
-          other_communications_address: formData.otherCommunicationsAddress,
-          tax_id: formData.taxId,
-          nominee_name: formData.registerNotesName,
-          delivery_instructions: formData.deliveryInstructions,
-          security_description: formData.securityDescription,
-          cusip_ppn: formData.cusipPpn
-        }
+        purchaser_entries: updatedPurchaserEntries
       };
 
       const result = await analysisService.generateDocument(payload);
@@ -188,7 +226,6 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
       if (result?.output_file?.sas_url) {
         toast.success('Document updated and generated successfully!');
         
-        // Use the new SAS URL for download
         const link = document.createElement('a');
         link.href = result.output_file.sas_url;
         link.download = result.output_file.original_filename || 'updated_document.docx';
@@ -221,6 +258,9 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
     if (normalizedType === 'msg') return styles.msgbg;
     return '';
   };
+
+  const currentEntry = apiResponse?.purchaser_entries?.[currentIndex];
+  const isLastEntry = currentIndex === (apiResponse?.purchaser_entries?.length || 0) - 1;
 
   return (
     <div className={styles.analysisContainer}>
@@ -285,9 +325,35 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
             <CheckCircle2 className={styles.successIconSmall} size={20} />
             <h2 className={styles.paneTitle}>Extracted Information</h2>
           </div>
+          <div className={styles.navGroup}>
+            <button 
+              className={styles.navArrow} 
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              title="Previous Entry"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button 
+              className={styles.navArrow} 
+              onClick={handleNext}
+              disabled={isLastEntry}
+              title="Next Entry"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
         </div>
 
-        <div className={styles.formContent}>
+        <div className={`${styles.formContent} form-content-animate`}>
+          {/* Source File indicator */}
+          {currentEntry && (
+            <div className={styles.sourceFileLabel}>
+              <FileText className={styles.sourceFileIcon} size={16} />
+              <span>Source: {currentEntry.source_file}</span>
+            </div>
+          )}
+
           {/* ── Header: Company Name + Principal Amount ── */}
           <div className={styles.templateHeader}>
             <div className={styles.inputGroup}>
@@ -462,14 +528,16 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
         </div>
 
         <div className={styles.paneFooter}>
-          <button 
-            className={styles.saveBtn} 
-            onClick={handleSave} 
-            disabled={isSaving}
-          >
-            <Save size={16} />
-            {isSaving ? 'Saving...' : 'Save Changes'}
-          </button>
+          {isLastEntry && (
+            <button 
+              className={styles.saveBtn} 
+              onClick={handleSave} 
+              disabled={isSaving}
+            >
+              <Save size={16} />
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -420,7 +420,7 @@ export const analysisService = {
 
     /**
      * Generate document from extracted data
-     * @param {Object} payload - { processing_id, extracted_data }
+     * @param {Object} payload - { processing_id, purchaser_entries }
      * @returns {Promise<Object>} Generation result
      */
     generateDocument: async (payload) => {
