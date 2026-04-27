@@ -65,6 +65,6 @@ export const formatFileSize = (size) => {
  */
 export const isViewableInline = (filename) => {
     const ext = getFileExtension(filename);
-    // PDF can be displayed natively, DOCX/DOC via Office Online
-    return ['pdf', 'docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt'].includes(ext);
+    // PDF/MSG can be displayed natively/locally, DOCX/DOC via Office Online
+    return ['pdf', 'docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt', 'msg'].includes(ext);
 };

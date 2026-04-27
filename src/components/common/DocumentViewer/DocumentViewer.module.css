@@ -35,12 +35,14 @@
   color: var(--color-text-primary, #1e293b);
 }
 
-.embedded .actionBtn, .embedded .closeBtn {
+.embedded .actionBtn,
+.embedded .closeBtn {
   background: var(--color-bg-secondary, #f1f5f9);
   color: var(--color-text-secondary, #64748b);
 }
 
-.embedded .actionBtn:hover, .embedded .closeBtn:hover {
+.embedded .actionBtn:hover,
+.embedded .closeBtn:hover {
   background: var(--color-icon-btn-hover, #e2e8f0);
   color: var(--color-text-primary, #1e293b);
 }
@@ -59,8 +61,13 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .viewerHeader {
@@ -100,7 +107,8 @@
   flex-shrink: 0;
 }
 
-.actionBtn, .closeBtn {
+.actionBtn,
+.closeBtn {
   background: rgba(255, 255, 255, 0.1);
   border: none;
   color: white;
@@ -164,8 +172,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ─── MSG Fallback Styles ─── */
@@ -194,8 +207,15 @@
 }
 
 @keyframes pulseIcon {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .msgTitle {
@@ -257,13 +277,14 @@
   .viewerHeader {
     padding: 10px 16px;
   }
-  
+
   .fileName {
     font-size: 14px;
     max-width: 180px;
   }
 
-  .actionBtn, .closeBtn {
+  .actionBtn,
+  .closeBtn {
     width: 32px;
     height: 32px;
   }
@@ -278,7 +299,8 @@
   }
 
   .embedded {
-    min-height: 70vh; /* More aggressive for small phones */
+    min-height: 70vh;
+    /* More aggressive for small phones */
   }
 
   .viewerContent {
@@ -301,7 +323,7 @@
   border-bottom: 1px solid #e2e8f0;
   padding: 20px 28px;
   flex-shrink: 0;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .msgSubjectRow {
@@ -391,13 +413,33 @@
 .msgAttachItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 4px 12px;
+  padding: 6px 12px;
   font-size: 12px;
   color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.msgAttachItem:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.msgAttachDownloadIcon {
+  margin-left: 4px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.msgAttachItem:hover .msgAttachDownloadIcon {
+  opacity: 1;
+  color: #EE202E;
 }
 
 /* ─── Email Body ─── */

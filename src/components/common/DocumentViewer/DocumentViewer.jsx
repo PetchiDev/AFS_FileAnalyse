@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  Download, 
-  Maximize2, 
-  Minimize2, 
-  Mail, 
-  AlertCircle, 
-  User, 
-  Clock, 
-  Hash, 
-  Paperclip, 
-  ChevronDown, 
-  ChevronUp 
+import {
+  X,
+  Download,
+  Maximize2,
+  Minimize2,
+  Mail,
+  AlertCircle,
+  User,
+  Clock,
+  Hash,
+  Paperclip,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import MsgReaderLib from '@kenjiuno/msgreader';
 import { getSafeViewerUrl, getFileExtension, isViewableInline } from '@/utils/fileUtils';
 import styles from './DocumentViewer.module.css';
 
 // CJS interop: @kenjiuno/msgreader exports the class as `.default` on the module object
-const MsgReader = MsgReaderLib?.default ?? MsgReaderLib;
+const MsgReader = MsgReaderLib?.default || MsgReaderLib;
 
 /* ─── MSG Parser Hook ─────────────────────────────────────────── */
 const useMsgParser = (file, isMsgFile) => {
@@ -36,16 +36,27 @@ const useMsgParser = (file, isMsgFile) => {
 
     (async () => {
       try {
-        const response = await fetch(file.url);
-        if (!response.ok) throw new Error(`Failed to fetch file: ${response.statusText}`);
+        const response = await fetch(file.url, { mode: 'cors' });
+        if (!response.ok) {
+          if (response.status === 403 || response.status === 0) {
+            throw new Error('Access denied or CORS block. Please ensure Azure CORS is enabled.');
+          }
+          throw new Error(`Failed to fetch file: ${response.statusText}`);
+        }
         const arrayBuffer = await response.arrayBuffer();
 
-        const reader = new MsgReader(arrayBuffer);
+        // Use Uint8Array as it's more compatible with MsgReader across environments
+        const buffer = new Uint8Array(arrayBuffer);
+        const reader = new MsgReader(buffer);
         const info = reader.getFileData();
 
         if (!cancelled) setMsgData(info);
       } catch (err) {
-        if (!cancelled) setMsgError(err.message || 'Failed to parse MSG file');
+        console.error('MSG Parse Error:', err);
+        if (!cancelled) {
+          const isCorsError = err.message.includes('fetch') || err.message.includes('CORS');
+          setMsgError(isCorsError ? 'Cross-Origin (CORS) access denied. Check Azure Storage settings.' : (err.message || 'Failed to parse MSG file'));
+        }
       } finally {
         if (!cancelled) setMsgLoading(false);
       }
@@ -70,7 +81,7 @@ const MsgViewer = ({ msgData }) => {
     .join(', ') || '—';
 
   const attachments = msgData.attachments || [];
-  const bodyHtml = msgData.bodyHtml || '';
+  const bodyHtml = msgData.bodyHTML || msgData.bodyHtml || '';
   const bodyText = msgData.body || '';
 
   return (
@@ -189,16 +200,16 @@ const DocumentViewer = ({ file, onClose, isEmbedded = false }) => {
         </div>
         <div className={styles.viewerActions}>
           {(canViewInline || isMsgFile) && (
-            <button 
-              className={styles.actionBtn} 
+            <button
+              className={styles.actionBtn}
               onClick={toggleFullscreen}
               title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
             >
               {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
             </button>
           )}
-          <button 
-            className={styles.actionBtn} 
+          <button
+            className={styles.actionBtn}
             onClick={handleDownload}
             title="Download"
           >
@@ -209,7 +220,7 @@ const DocumentViewer = ({ file, onClose, isEmbedded = false }) => {
           </button>
         </div>
       </div>
-      
+
       <div className={styles.viewerContent}>
         {isMsgFile ? (
           msgLoading ? (
