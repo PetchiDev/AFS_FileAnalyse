@@ -18,6 +18,7 @@ import {
   Globe
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { gsap } from 'gsap';
 import analysisService from '@/services/analysis.service';
 import { getSafeViewerUrl } from '@/utils/fileUtils';
 import styles from './ProcessingDetail.module.css';
@@ -27,6 +28,8 @@ const ProcessingDetail = () => {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedEntryIndex, setSelectedEntryIndex] = useState(0);
+  const contentRef = useRef(null);
 
   const fetchedIdRef = useRef(null);
 
@@ -50,6 +53,27 @@ const ProcessingDetail = () => {
     fetchDetail();
   }, [id, data]);
 
+  const handleEntryClick = (index) => {
+    if (selectedEntryIndex === index) return;
+
+    // Smooth transition animation
+    gsap.to(contentRef.current, {
+      opacity: 0,
+      y: 15,
+      duration: 0.3,
+      onComplete: () => {
+        setSelectedEntryIndex(index);
+        gsap.to(contentRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          delay: 0.1,
+          ease: "power2.out"
+        });
+      }
+    });
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingWrapper}>
@@ -71,7 +95,9 @@ const ProcessingDetail = () => {
     );
   }
 
-  const { extracted_data, output_file, created_at, status } = data;
+  const currentEntry = data.purchaser_entries?.[selectedEntryIndex] || { extracted_data: data.extracted_data || {} };
+  const { extracted_data } = currentEntry;
+  const { output_file, created_at, status } = data;
 
   return (
     <div className={styles.detailWrapper}>
@@ -82,7 +108,7 @@ const ProcessingDetail = () => {
             <span>Back to Dashboard</span>
           </button>
           <div className={styles.titleArea}>
-            <h1>Analysis Results</h1>
+            <h1>Analysis <span className={styles.accentText}>Results</span></h1>
             {/* <div className={styles.statusIndicator}>
               <div className={`${styles.statusDot} ${styles[status?.toLowerCase()]}`} />
               <span>{status}</span>
@@ -112,8 +138,29 @@ const ProcessingDetail = () => {
         </div>
       </header>
 
+      {/* Source File Navigation */}
+      <div className={styles.sourceNav}>
+        {data.purchaser_entries?.map((entry, index) => (
+          <button
+            key={index}
+            className={`${styles.sourceTab} ${selectedEntryIndex === index ? styles.activeTab : ''}`}
+            onClick={() => handleEntryClick(index)}
+          >
+            <div className={styles.tabIcon}>
+              <FileText size={16} />
+            </div>
+            <div className={styles.tabContent}>
+              <span className={styles.tabTitle}>Source File</span>
+              <span className={styles.tabFileName} title={entry.source_file}>
+                {entry.source_file}
+              </span>
+            </div>
+          </button>
+        ))}
+      </div>
+
       <main className={styles.layoutContainer}>
-        <div className={styles.mainContent}>
+        <div className={`${styles.mainContent} animate-content`} ref={contentRef}>
           {/* Company Identity */}
           <section className={styles.glassCard}>
             <div className={styles.cardHeader}>

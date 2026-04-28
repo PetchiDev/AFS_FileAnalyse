@@ -65,11 +65,19 @@
 }
 
 .titleArea h1 {
-  font-size: 2.25rem;
-  font-weight: 800;
+  font-size: 3.5rem;
+  font-weight: 700;
   color: var(--color-text-primary);
   margin: 0;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.accentText {
+  color: var(--color-primary);
+  font-style: italic;
+  font-weight: 700;
 }
 
 .statusIndicator {
@@ -121,6 +129,96 @@
   transform: translateY(-3px);
   box-shadow: 0 15px 30px rgba(238, 32, 46, 0.3);
   background: var(--color-primary-dark);
+}
+
+/* Source Navigation Bar */
+.sourceNav {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.5rem 1.5rem 0.5rem;
+  margin-bottom: 2rem;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.sourceNav::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.sourceTab {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  padding: 1rem 1.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 280px;
+  max-width: 320px;
+  text-align: left;
+  flex-shrink: 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.sourceTab:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 15px -3px rgba(238, 32, 46, 0.1);
+}
+
+.activeTab {
+  background: var(--color-bg-primary);
+  border-color: var(--color-primary);
+  border-width: 2px;
+  box-shadow: 0 10px 20px -5px rgba(238, 32, 46, 0.15);
+}
+
+.tabIcon {
+  width: 40px;
+  height: 40px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.activeTab .tabIcon {
+  background: var(--color-primary);
+  color: white;
+}
+
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.tabTitle {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.tabFileName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activeTab .tabFileName {
+  color: var(--color-primary);
 }
 
 /* Layout Grid */
@@ -430,7 +528,7 @@
   }
 
   .titleArea h1 {
-    font-size: 1.5rem;
+    font-size: 2.25rem;
     width: 100%;
   }
 
@@ -504,5 +602,16 @@
   .backBtn {
     padding: 6px 12px;
     font-size: 12px;
+  }
+
+  .sourceTab {
+    min-width: 220px;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .tabIcon {
+    width: 32px;
+    height: 32px;
   }
 }
