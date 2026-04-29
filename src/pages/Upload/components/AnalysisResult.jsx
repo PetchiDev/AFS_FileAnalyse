@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  FileText, 
-  Download, 
-  RotateCcw, 
-  CheckCircle2, 
+import {
+  FileText,
+  Download,
+  RotateCcw,
+  CheckCircle2,
   Save,
   ChevronRight,
   ChevronLeft,
@@ -30,7 +30,7 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
 
   const mapEntryToData = (entry) => {
     const ext = entry?.extracted_data || {};
-    
+
     // Format wire_transfer object into a single text block
     const wt = ext.wire_transfer || {};
     let wireTransferText = '';
@@ -47,6 +47,7 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
 
     return {
       companyName: ext.company_name || '',
+      series: ext.series || '',
       principalAmount: ext.principal_amount || '',
       wireTransfer: wireTransferText,
       paymentNoticesAddress: ext.payment_notices_address || '',
@@ -71,6 +72,7 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
   // Current form data based on index
   const formData = formDataArray[currentIndex] || {
     companyName: '',
+    series: '',
     principalAmount: '',
     wireTransfer: '',
     paymentNoticesAddress: '',
@@ -138,7 +140,7 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
   };
 
   useEffect(() => {
-    gsap.fromTo('.analysis-animate', 
+    gsap.fromTo('.analysis-animate',
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' }
     );
@@ -162,7 +164,7 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
         duration: 0.3,
         onComplete: () => {
           setCurrentIndex(prev => prev + 1);
-          gsap.fromTo('.form-content-animate', 
+          gsap.fromTo('.form-content-animate',
             { opacity: 0, x: 20 },
             { opacity: 1, x: 0, duration: 0.3 }
           );
@@ -180,7 +182,7 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
         duration: 0.3,
         onComplete: () => {
           setCurrentIndex(prev => prev - 1);
-          gsap.fromTo('.form-content-animate', 
+          gsap.fromTo('.form-content-animate',
             { opacity: 0, x: -20 },
             { opacity: 1, x: 0, duration: 0.3 }
           );
@@ -191,7 +193,7 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
 
   const handleSave = async () => {
     if (isSaving) return;
-    
+
     setIsSaving(true);
     try {
       // Build the purchaser_entries array with updated extracted_data
@@ -202,6 +204,7 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
           extracted_data: {
             ...entry.extracted_data,
             company_name: data.companyName,
+            series: data.series,
             principal_amount: data.principalAmount,
             wire_transfer: parseWireTransfer(data.wireTransfer),
             payment_notices_address: data.paymentNoticesAddress,
@@ -222,10 +225,10 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
       };
 
       const result = await analysisService.generateDocument(payload);
-      
+
       if (result?.output_file?.sas_url) {
         toast.success('Document updated and generated successfully!');
-        
+
         const link = document.createElement('a');
         link.href = result.output_file.sas_url;
         link.download = result.output_file.original_filename || 'updated_document.docx';
@@ -267,19 +270,19 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
       {/* Left Pane - File Gallery / Viewer */}
       <div className={`${styles.rightPane} analysis-animate`}>
         {selectedDoc ? (
-          <DocumentViewer 
-            file={selectedDoc} 
+          <DocumentViewer
+            file={selectedDoc}
             isEmbedded={true}
-            onClose={() => setSelectedDoc(null)} 
+            onClose={() => setSelectedDoc(null)}
           />
         ) : (
           <>
             <div className={styles.paneHeader}>
               <h2 className={styles.paneTitle}>Associated Files</h2>
               <div className={styles.headerActions}>
-                <button className={styles.downloadBtn} onClick={onDownload}>
+                {/* <button className={styles.downloadBtn} onClick={onDownload}>
                   <Download size={16} /> Download All
-                </button>
+                </button> */}
                 <button className={styles.resetBtn} onClick={onReset}>
                   <RotateCcw size={16} /> New Upload
                 </button>
@@ -289,8 +292,8 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
             <div className={styles.fileGallery}>
               {docs.length > 0 ? (
                 docs.map(file => (
-                  <div 
-                    key={file.id} 
+                  <div
+                    key={file.id}
                     className={styles.fileCard}
                     onClick={() => setSelectedDoc(file)}
                   >
@@ -326,16 +329,16 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
             <h2 className={styles.paneTitle}>Extracted Information</h2>
           </div>
           <div className={styles.navGroup}>
-            <button 
-              className={styles.navArrow} 
+            <button
+              className={styles.navArrow}
               onClick={handlePrev}
               disabled={currentIndex === 0}
               title="Previous Entry"
             >
               <ChevronLeft size={20} />
             </button>
-            <button 
-              className={styles.navArrow} 
+            <button
+              className={styles.navArrow}
               onClick={handleNext}
               disabled={isLastEntry}
               title="Next Entry"
@@ -380,6 +383,21 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
                 placeholder="$0.00"
               />
             </div>
+          </div>
+
+          <div className={styles.row}>
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>SERIES</label>
+              <input
+                type="text"
+                name="series"
+                value={formData.series}
+                onChange={handleInputChange}
+                className={styles.formInput}
+                placeholder="Enter series (e.g. A, B)"
+              />
+            </div>
+            <div />
           </div>
 
           {/* ── (1) Wire Transfer ── */}
@@ -529,9 +547,9 @@ const AnalysisResult = ({ apiResponse, inputFiles = [], outputFile = null, onRes
 
         <div className={styles.paneFooter}>
           {isLastEntry && (
-            <button 
-              className={styles.saveBtn} 
-              onClick={handleSave} 
+            <button
+              className={styles.saveBtn}
+              onClick={handleSave}
               disabled={isSaving}
             >
               <Save size={16} />
